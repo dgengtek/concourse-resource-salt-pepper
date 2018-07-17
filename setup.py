@@ -18,7 +18,7 @@ with open('requirements_dev.txt') as req:
         requirements_dev.append(i.strip())
 
 setup(
-    name='concourse-salt-pepper',
+    name='concsp',
     version='0.0.1',
     description="Concourse resource for salt pepper",
     long_description=readme + '\n\n' + history,
@@ -27,9 +27,7 @@ setup(
     url='https://devnull',
     entry_points={
         "console_scripts": [
-            "concourse_check = concourse-salt-pepper.cli.cli:main",
-            "concourse_in = concourse-salt-pepper.cli.cli:main",
-            "concourse_out = concourse-salt-pepper.cli.cli:main",
+            "concsp=concsp.cli.cli:main",
         ],
     },
     packages=find_packages("src"),
