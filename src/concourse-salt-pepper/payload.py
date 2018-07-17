@@ -4,10 +4,14 @@ from __future__ import print_function
 import json
 import sys
 import os
+import logging
 
 from functions import fail_unless
 
-class PayLoad(object): # pylint: disable=too-few-public-methods
+logger = logging.getLogger(__name__)
+
+
+class PayLoad(object):  # pylint: disable=too-few-public-methods
     ''' Payload class '''
 
     def __init__(self):

@@ -1,9 +1,8 @@
-FROM alpine:3.6
+FROM alpine:edge
 
-RUN apk add --update \
-    python \
-    python-dev \
-    py-pip
+RUN apk add --no-cache \
+    python3 \
+    python3-dev
 
 ADD src/bin /opt/resource/
 ADD src/lib /opt/resource/
@@ -14,7 +13,6 @@ RUN chmod +x /opt/resource/* \
     && rm /tmp/requirements.txt
 
 # Do some clean up
-RUN echo "# Cleaning up" && echo "" \
-    && rm -rf /tmp/* \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /root/.cache/
+RUN rm -rf /tmp/* \
+  && rm -rf /var/cache/apk/* \
+  && rm -rf /root/.cache/

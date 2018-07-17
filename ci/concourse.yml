@@ -1,0 +1,105 @@
+resource_types:
+- name: email
+  type: docker-image
+  source:
+    repository: pcfseceng/email-resource
+
+- name: git-workflow
+  type: docker-image
+  source:
+    repository: {{source_repository_git_workflow_image}}
+    tag: v1
+
+resources:
+- name: r-((project_name))-dev
+  type: git-workflow
+  source:
+    uri: {{source_uri}}
+    branch: dev
+    private_key: ((r-git-ssh.private_key))
+
+- name: r-docker-image-build
+  type: docker-image
+  source: 
+    repository: {{repository_build_image}}
+    tag: v1
+
+- name: send-email
+  type: email
+  source:
+    smtp:
+      host: {{smtp_host}}
+      port: "587" # this must be a string
+      username: ((r-email.username))
+      password: ((r-email.password))
+    from: {{smtp_from}}
+    to: 
+      - {{smtp_to}}
+
+jobs:
+- name: j-build-image
+  plan:
+    - get: r-((project_name))-dev
+      trigger: True
+
+    - put: r-docker-image-build
+      params:
+        build: r-((project_name))-dev/ci
+        build_args: 
+          http_proxy: {{http_proxy}}
+      on_failure:
+        put: send-email
+        params:
+          subject_text: "Build failed: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}"
+          body_text: "Docker image build failed: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+
+- name: j-run-tests
+  plan:
+    - aggregate:
+      - get: r-((project_name))-dev
+        trigger: True
+        passed:
+          - j-build-image
+      - get: r-docker-image-build
+        trigger: True
+        passed:
+          - j-build-image
+
+    - task: Test project
+      image: r-docker-image-build
+      on_failure:
+        put: send-email
+        params:
+          subject_text: "Build failed: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}"
+          body_text: "Failed task: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      config:
+        platform: linux
+        inputs:
+          - name: r-((project_name))-dev
+        run:
+          dir: r-((project_name))-dev
+          path: make
+          args:
+            - test
+
+    - put: send-email
+      params:
+        subject_text: "Build finished: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}"
+        body_text: "${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+
+- name: j-merge-ff
+  plan:
+    - get: r-((project_name))-dev
+      trigger: True
+      params:
+        fetch:
+          - release
+      passed:
+        - j-run-tests
+
+    - put: r-((project_name))-dev
+      params:
+        merge_to:
+          - branch: release
+            ff_only: True
+        repository: r-((project_name))-dev
