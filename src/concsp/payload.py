@@ -1,72 +1,87 @@
-''' Parse payload options and command line argument'''
-from __future__ import print_function
-
 import json
 import sys
 import os
 import logging
 
-from functions import fail_unless
-
 logger = logging.getLogger(__name__)
 
 
-class PayLoad(object):  # pylint: disable=too-few-public-methods
+class ConcoursePayloadException(Exception):
+    def __init__(self, msg):
+        super().__init__(msg)
+
+
+class ConcoursePayload(object):
     ''' Payload class '''
 
     def __init__(self):
-        self.payload = self._get_payload()
+        self.payload = {}
         self.args = {}
+        self.initialized = False
+
+    def init(self, payload=None):
+        self.initialized = True
+        self.payload = self.get_payload(payload)
         try:
             self.source = self.payload["source"]
         except KeyError:
-            fail_unless(False, "Source not configured.")
+            raise ConcoursePayloadException("Source not configured.")
         else:
             self.params = self.payload.get("params", {})
             self.parse_payload()
         # argument pass with dir
-        self.args["working_dir"] = self._get_dir_from_argv()
+        # not required
+        #self.working_dir = self._get_dir_from_argv()
 
-    @staticmethod
-    def _get_payload():
-        ''' Return a dict after serializing the JSON payload from STDIN '''
+    def get_payload(self, payload=sys.stdin):
+        if type(payload) == dict:
+            return payload
         try:
-            payload = json.load(sys.stdin)
+            payload = json.load(payload)
         except ValueError as value_error:
-            fail_unless(False, "JSON Input error: {}".format(value_error))
+            raise ConcoursePayloadException("JSON Input error: {}".format(value_error))
         return payload
 
-    @staticmethod
-    def _get_dir_from_argv():
+    def _get_dir_from_argv(self):
         if len(sys.argv) < 2:
             return False
 
-        fail_unless(os.path.isdir(sys.argv[1]), "Invalid dir argument passed '{}'".format(sys.argv[1]))
+        if not os.path.isdir(sys.argv[1]):
+            raise ConcoursePayloadException("Invalid dir argument passed '{}'".format(sys.argv[1]))
         return sys.argv[1]
 
     def parse_payload(self):
         ''' Parse payload passed by concourse'''
-        self.args["version"] = self.payload.get("version")
-        if self.args["version"] is None:
-            self.args["version"] = {}
+        self.version = self.payload.get("version")
+        if self.version is None:
+            self.version = {}
+        self.parse_payload_source()
+        self.parse_payload_params()
+
+    def parse_payload_source(self):
         try:
-            # Mandatory source configs
-            self.args["slack_token"] = self.source["slack_token"]
-            self.args["channel"] = self.source["channel"]
+            # Mandatory
+            self.uri = self.source["uri"]
+            self.username = self.source["username"]
+            self.password = self.source["password"]
+            self.eauth = self.source.get("eauth", "pam")
         except KeyError as value_error:
-            fail_unless(False, "Source config '{}' required".format(value_error))
-        # Optional source configs
-        self.args["bot_name"] = self.source.get("bot_name", "bender")
-        self.args["mention"] = self.source.get("mention", True)
-        self.args["as_user"] = self.source.get("as_user", True)
-        self.args["bot_icon_emoji"] = self.source.get("bot_icon_emoji")
-        self.args["bot_icon_url"] = self.source.get("bot_icon_url")
-        self.args["grammar"] = self.source.get("grammar")
-        self.args["template"] = self.source.get("template")
-        self.args["template_filename"] = self.source.get("template_filename", "template_file.txt")
-        self.args["slack_unread"] = self.source.get("slack_unread")
-        # Optional params config
-        self.args["path"] = self.params.get("path")
-        self.args["reply"] = self.params.get("reply")
-        self.args["reply_attachments"] = self.params.get("reply_attachments")
-        self.args["reply_thread"] = self.params.get("reply_thread", True)
+            raise ConcoursePayloadException("Source config '{}' required".format(value_error))
+        # Optional
+        self.debug_http = self.source.get("debug_http", False)
+        self.verify_ssl = self.source.get("verify_ssl", True)
+        self.outputter = self.source.get("outputter", True)
+        self.timeout = self.source.get("timeout", 60)
+        self.cache_token = self.source.get("cache_token", False)
+        self.loglevel = self.source.get("loglevel", "warning")
+        self.client = self.source.get("client", "local_async")
+        self.expr_form = self.source.get("expr_form", "glob")
+
+    def parse_payload_params(self):
+        # Optional
+        self.client = self.params.get("client", self.client)
+        self.expr_form = self.params.get("expr_form", self.expr_form)
+        self.tgt = self.params.get("tgt", None)
+        self.fun = self.params.get("fun", None)
+        self.arg = self.params.get("arg", [])
+        self.kwargs = self.params.get("kwargs", {})
