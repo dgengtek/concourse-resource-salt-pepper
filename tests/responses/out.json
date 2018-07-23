@@ -1,0 +1,11 @@
+{
+  "source": {},
+  "params": {
+    "client": "local_async",
+    "tgt": "*",
+    "fun": "test.ping",
+    "arg": "",
+    "kwargs": "",
+    "expr_form": "glob"
+  }
+}

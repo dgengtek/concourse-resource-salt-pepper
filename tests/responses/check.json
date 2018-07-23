@@ -1,8 +1,17 @@
 {
     "source": {
-        "slack_token": "xoxb-sdasd-1231231231",
-        "channel": "test-bender-dev",
-        "bot_name": "bender",
-        "grammar": "^(superApp)\\s+(deploy)\\s+(live|staging)\\s+(\\S+)($|\\s+)"
+        "uri": "https://salt:8000",
+        "eauth": "pam",
+        "username": "saltuser",
+        "password": "pass1word",
+        "timeout": 60,
+        "client": "local_async",
+        "tgt": "*",
+        "expr_form": "glob",
+        "debug_http": false,
+        "verify_ssl": true,
+        "outputter": "default",
+        "cache_token": false,
+        "loglevel": "warning"
     }
 }
