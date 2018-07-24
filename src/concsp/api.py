@@ -1,5 +1,6 @@
 from concsp import salt, payload
 import abc
+import sys
 
 
 class ConcourseApi(abc.ABC):
@@ -22,7 +23,7 @@ class ConcourseApi(abc.ABC):
 
     def _input(self):
         self.payload = self.payloadapi()
-        self.payload.init()
+        self.payload.init(sys.stdin)
 
     @abc.abstractmethod
     def _output(self):
