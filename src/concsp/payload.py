@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 class ResourcePayload(object):
     ''' Payload class '''
-    PATH_RESOURCE_PAYLOAD_DUMP = "/tmp/concourse_resource_payload.json"
 
     def __init__(self):
         self.payload = {}
@@ -23,9 +22,6 @@ class ResourcePayload(object):
         self.initialized = True
 
         self.payload = self.get_payload(payload)
-        with open(ResourcePayload.PATH_RESOURCE_PAYLOAD_DUMP) as f:
-            json.dump(self.payload, f)
-
         try:
             self.source = self.payload["source"]
         except KeyError:

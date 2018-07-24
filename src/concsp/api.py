@@ -2,9 +2,12 @@ from concsp import salt, payload
 from pepper import Pepper
 import abc
 import sys
+import json
 
 
 class ConcourseApi(abc.ABC):
+    PATH_RESOURCE_PAYLOAD_DUMP = "/tmp/concourse_resource_payload.json"
+
     def __init__(self, resource_payload, saltapi):
         self.resource_payload = resource_payload
         self.saltapi = saltapi
@@ -30,6 +33,8 @@ class ConcourseApi(abc.ABC):
     def _input(self):
         self.payload = self.resource_payload()
         self.payload.init(sys.stdin)
+        with open(ConcourseApi.PATH_RESOURCE_PAYLOAD_DUMP, "w") as f:
+            json.dump(self.payload, f)
 
     @abc.abstractmethod
     def _output(self):
