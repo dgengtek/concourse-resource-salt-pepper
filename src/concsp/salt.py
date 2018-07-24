@@ -23,7 +23,7 @@ class SaltAPI(pepper.Pepper):
         Run a command with the local_async client and periodically poll the job
         cache for returns for the job.
         '''
-        load[0]['client'] = 'local_async'
+        load['client'] = 'local_async'
         async_ret = self.low(load)
         jid = async_ret['return'][0]['jid']
         nodes = async_ret['return'][0]['minions']
