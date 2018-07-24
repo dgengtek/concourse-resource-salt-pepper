@@ -71,12 +71,23 @@ class SaltAPI(pepper.Pepper):
             print(exit_code, result)
 
 
+def get_api_payload(payload):
+    return build_load(
+            payload.client,
+            payload.tgt,
+            payload.fun,
+            payload.args,
+            payload.kwargs,
+            payload.expr_form,
+            payload.timeout)
+
+
 def build_load(
         client,
         tgt,
         fun,
-        arg=None,
-        kwarg=None,
+        args=None,
+        kwargs=None,
         expr_form="glob",
         timeout=None,
         ret=None):
