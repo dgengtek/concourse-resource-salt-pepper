@@ -49,7 +49,7 @@ class ConcourseApiIn(ConcourseApiNoop):
             }))
 
 
-class ConcourseApiCheck(ConcourseApi):
+class ConcourseApiCheck(ConcourseApiNoop):
     def _output(self):
         print([])
 
