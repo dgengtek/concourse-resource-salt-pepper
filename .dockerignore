@@ -1,0 +1,8 @@
+venv
+.venv
+build
+ci
+dist
+Dockerfile
+.git
+.pytest_cache
