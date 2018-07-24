@@ -1,11 +1,13 @@
 import click
 # http://click.pocoo.org/5/options/
 from concsp import api
+import logging
 
 
 @click.group("concsp")
 @click.pass_context
 def main(ctx, args=None):
+    logging.basicConfig(level=logging.INFO)
     d = dict()
     ctx.obj = d
 
