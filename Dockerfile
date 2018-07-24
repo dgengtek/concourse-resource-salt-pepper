@@ -32,4 +32,4 @@ WORKDIR /concsp
 RUN make test
 
 FROM resource
-RUN apk remove make
+RUN apk del make
