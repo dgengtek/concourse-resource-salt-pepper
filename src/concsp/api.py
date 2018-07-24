@@ -64,13 +64,13 @@ class ConcourseApiOut(ConcourseApi):
 
 def build_check():
     return ConcourseApiCheck(
-            payload.ConcoursePayload,
+            payload.ResourcePayload,
             salt.SaltAPI)
 
 
 def build_out():
     return ConcourseApiOut(
-            payload.ConcoursePayloadOut,
+            payload.ResourcePayloadOut,
             salt.SaltAPI)
 
 

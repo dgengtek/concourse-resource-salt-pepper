@@ -1,7 +1,7 @@
 import pytest
 import pepper
 from concsp import salt
-from concsp.payload import ConcoursePayload
+from concsp.payload import ResourcePayload
 import error_mock
 import json
 
@@ -24,14 +24,14 @@ def payload_out():
 
 @pytest.fixture()
 def concourse_payload_check(payload_check):
-    payload = ConcoursePayload()
+    payload = ResourcePayload()
     payload.init(payload_check)
     return payload
 
 
 @pytest.fixture()
 def concourse_payload_out(payload_out):
-    payload = ConcoursePayload()
+    payload = ResourcePayload()
     payload.init(payload_out)
     return payload
 

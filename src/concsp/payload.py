@@ -7,7 +7,7 @@ import copy
 logger = logging.getLogger(__name__)
 
 
-class ConcoursePayload(object):
+class ResourcePayload(object):
     ''' Payload class '''
 
     def __init__(self):
@@ -17,14 +17,14 @@ class ConcoursePayload(object):
 
     def init(self, payload):
         if self.initialized:
-            raise ConcoursePayloadException("Payload has been initialized already.")
+            raise ResourcePayloadException("Payload has been initialized already.")
         self.initialized = True
 
         self.payload = self.get_payload(payload)
         try:
             self.source = self.payload["source"]
         except KeyError:
-            raise ConcoursePayloadException("Source not configured.")
+            raise ResourcePayloadException("Source not configured.")
         else:
             self.params = self.payload.get("params", {})
             self.parse_payload()
@@ -34,20 +34,20 @@ class ConcoursePayload(object):
 
     def get_payload(self, payload=sys.stdin):
         if not payload:
-            raise ConcoursePayloadException("Payload required.")
+            raise ResourcePayloadException("Payload required.")
         if type(payload) == dict:
             return copy.deepcopy(payload)
         try:
             payload = json.load(payload)
         except ValueError as value_error:
-            raise ConcoursePayloadException("JSON Input error: {}".format(value_error))
+            raise ResourcePayloadException("JSON Input error: {}".format(value_error))
         return payload
 
     def __getattribute__(self, name):
         if name in ("init", "initialized"):
             return super().__getattribute__(name)
         if not self.initialized:
-            raise ConcoursePayloadException("Payload is not initialized. Attribute access denied.")
+            raise ResourcePayloadException("Payload is not initialized. Attribute access denied.")
         return super().__getattribute__(name)
 
     def reset(self):
@@ -61,7 +61,7 @@ class ConcoursePayload(object):
             return False
 
         if not os.path.isdir(sys.argv[1]):
-            raise ConcoursePayloadException("Invalid dir argument passed '{}'".format(sys.argv[1]))
+            raise ResourcePayloadException("Invalid dir argument passed '{}'".format(sys.argv[1]))
         return sys.argv[1]
 
     def parse_payload(self):
@@ -81,7 +81,7 @@ class ConcoursePayload(object):
             self.password = self.source["password"]
             self.eauth = self.source.get("eauth", "pam")
         except KeyError as value_error:
-            raise ConcoursePayloadSourceException("Source config '{}' required".format(value_error))
+            raise ResourcePayloadSourceException("Source config '{}' required".format(value_error))
         # Optional
         self.debug_http = self.source.get("debug_http", False)
         self.verify_ssl = self.source.get("verify_ssl", True)
@@ -104,35 +104,35 @@ class ConcoursePayload(object):
 
     def _verify(self):
         if type(self.args) != list:
-            raise ConcoursePayloadParameterException("args is not a list")
+            raise ResourcePayloadParameterException("args is not a list")
         if type(self.kwargs) != dict:
-            raise ConcoursePayloadParameterException("kwargs is not a dict")
+            raise ResourcePayloadParameterException("kwargs is not a dict")
 
 
-class ConcoursePayloadOut(ConcoursePayload):
+class ResourcePayloadOut(ResourcePayload):
     def parse_payload_params(self):
         try:
             # Mandatory
             self.tgt = self.params["tgt"]
             self.fun = self.params["fun"]
         except KeyError as value_error:
-            raise ConcoursePayloadParameterException("Params config '{}' required".format(value_error))
+            raise ResourcePayloadParameterException("Params config '{}' required".format(value_error))
         self.client = self.params.get("client", self.client)
         self.expr_form = self.params.get("expr_form", self.expr_form)
         self.args = self.params.get("args", [])
         self.kwargs = self.params.get("kwargs", {})
 
 
-class ConcoursePayloadException(Exception):
+class ResourcePayloadException(Exception):
     def __init__(self, msg):
         super().__init__(msg)
 
 
-class ConcoursePayloadSourceException(Exception):
+class ResourcePayloadSourceException(Exception):
     def __init__(self, msg):
         super().__init__(msg)
 
 
-class ConcoursePayloadParameterException(Exception):
+class ResourcePayloadParameterException(Exception):
     def __init__(self, msg):
         super().__init__(msg)
