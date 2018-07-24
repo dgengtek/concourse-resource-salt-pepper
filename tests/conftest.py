@@ -1,6 +1,7 @@
 import pytest
 import pepper
 from concsp import salt
+from concsp.payload import ConcoursePayload
 import error_mock
 import json
 
@@ -21,6 +22,19 @@ def payload_out():
     with open("tests/responses/out.json") as f:
         return json.load(f)
 
+@pytest.fixture()
+def concourse_payload_check(payload_check):
+    payload = ConcoursePayload()
+    payload.init(payload_check)
+    return payload
+
+
+@pytest.fixture()
+def concourse_payload_out(payload_out):
+    payload = ConcoursePayload()
+    payload.init(payload_out)
+    return payload
+
 
 @pytest.fixture(scope="module")
 def salturl():
@@ -28,8 +42,8 @@ def salturl():
 
 
 @pytest.fixture()
-def api(options):
-    return salt.SaltAPI(options)
+def api(concourse_payload_check):
+    return salt.SaltAPI(concourse_payload_check)
 
 
 @pytest.fixture()
@@ -42,11 +56,6 @@ def api_authenticated(api, api_response):
 def mock_req_200(mocker):
     mocker.patch.object(salt.SaltAPI, "req", autospec=True)
     salt.SaltAPI.req.return_value = {}
-
-
-@pytest.fixture()
-def options(salturl):
-    return salt.Options.build(salturl)
 
 
 @pytest.fixture()
