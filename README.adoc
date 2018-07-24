@@ -1,3 +1,34 @@
-= Inititial repository commit for concourse-salt-pepper
+= Concourse salt pepper resource
 github.com/dgengtek
 v.0.0.1, 2018-07-15
+
+## Deploying to Concourse
+
+[yaml]
+****
+resource_types:
+- name: concourse-salt-pepper
+  type: docker-image
+  source:
+    repository: .../concourse-salt-pepper
+    tag: latest
+****
+
+== Source Configuration
+
+* uri: 
+* username: 
+* password: 
+
+== Behavior
+
+=== `check`: noop
+
+=== `in`: noop
+
+=== `out`: Run commands via salt pepper library
+
+==== `out Parameters`
+
+* tgt: minion target
+* fun: salt module to run remotely
