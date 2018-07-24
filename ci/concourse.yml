@@ -44,7 +44,8 @@ jobs:
 
     - put: r-docker-image-build
       params:
-        build: r-((project_name))-dev/ci
+        build: r-((project_name))-dev
+        dockerfile: r-((project_name))-dev/ci/Dockerfile
         build_args: 
           http_proxy: {{http_proxy}}
       on_failure:
