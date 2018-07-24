@@ -1,6 +1,7 @@
 *.pyc
 *_test.json
 .pytest_cache
+build
 
 # pyenv
 .python-version
