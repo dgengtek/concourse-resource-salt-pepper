@@ -25,3 +25,4 @@ pip-delete-this-directory.txt
 .vscode/*
 example/*
 __pycache__
+ciparams.yml
