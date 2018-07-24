@@ -34,7 +34,7 @@ clean-build: ## remove build artifacts
 	rm -fr dist/
 	rm -fr .eggs/
 	find . -not \( -path "./venv/*" -o -path "./.venv/*" \) -a -name '*.egg-info' -exec rm -fr {} +
-	find . -not \( -path "./venv/*" -o -path "./.venv/*" \) -a '*.egg' -exec rm -f {} +
+	find . -not \( -path "./venv/*" -o -path "./.venv/*" \) -a -name '*.egg' -exec rm -f {} +
 
 clean-pyc: ## remove Python file artifacts
 	find . -not \( -path "./venv/*" -o -path "./.venv/*" \) -a -name '*.pyc' -exec rm -f {} +
