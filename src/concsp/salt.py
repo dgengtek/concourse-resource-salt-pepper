@@ -1,6 +1,7 @@
 from pepper import PepperException
 import time
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -88,14 +89,16 @@ class SaltAPI():
             logger.error(
                     "{}. Failed to login as {} using eauth: {}."
                     .format(exc, self.payload.username, self.payload.eauth))
+            logger.debug("password='{}'".format(self.payload.password))
+            sys.exit(1)
 
         logger.info("Running pepper - {} {} - '{}' {} {} {} ".format(
-            load.client,
-            load.expr_form,
-            load.tgt,
-            load.fun,
-            load.args,
-            load.kwargs))
+            self.payload.client,
+            self.payload.expr_form,
+            self.payload.tgt,
+            self.payload.fun,
+            self.payload.args,
+            self.payload.kwargs))
 
         for exit_code, result in self.poll_for_returns(load):
             print(exit_code, result)
