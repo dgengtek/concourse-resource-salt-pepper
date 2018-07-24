@@ -34,7 +34,7 @@ class ConcourseApi(abc.ABC):
         self.payload = self.resource_payload()
         self.payload.init(sys.stdin)
         with open(ConcourseApi.PATH_RESOURCE_PAYLOAD_DUMP, "w") as f:
-            json.dump(self.payload, f)
+            json.dump(self.payload.payload, f)
 
     @abc.abstractmethod
     def _output(self):
