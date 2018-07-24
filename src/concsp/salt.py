@@ -61,7 +61,11 @@ class SaltAPI(pepper.Pepper):
             else:
                 time.sleep(self.payload.seconds_to_wait)
 
-        exit_code = exit_code if self.payload.fail_if_minions_dont_respond else 0
+        if self.payload.fail_if_minions_dont_respond:
+            exit_code = exit_code
+        else:
+            exit_code = 0
+
         yield exit_code, "{{Failed: {}}}".format(
             list(set(ret_nodes) ^ set(nodes)))
 
@@ -73,13 +77,13 @@ class SaltAPI(pepper.Pepper):
 
 def get_api_payload(payload):
     return build_load(
-            payload.client,
-            payload.tgt,
-            payload.fun,
-            payload.args,
-            payload.kwargs,
-            payload.expr_form,
-            payload.timeout)
+        payload.client,
+        payload.tgt,
+        payload.fun,
+        payload.args,
+        payload.kwargs,
+        payload.expr_form,
+        payload.timeout)
 
 
 def build_load(
@@ -92,12 +96,12 @@ def build_load(
         timeout=None,
         ret=None):
     return {
-            "client": client,
-            "tgt": tgt,
-            "fun": fun,
-            "arg": arg,
-            "kwarg": kwarg,
-            "expr_form": expr_form,
-            "timeout": timeout,
-            "ret": ret
-            }
+        "client": client,
+        "tgt": tgt,
+        "fun": fun,
+        "arg": args,
+        "kwarg": kwargs,
+        "expr_form": expr_form,
+        "timeout": timeout,
+        "ret": ret
+        }
