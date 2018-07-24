@@ -1,20 +1,26 @@
 from concsp import salt, payload
+from pepper import Pepper
 import abc
 import sys
 
 
 class ConcourseApi(abc.ABC):
-    def __init__(self, payloadapi, saltpepperapi):
-        self.payloadapi = payloadapi
-        self.saltpepperapi = saltpepperapi
+    def __init__(self, resource_payload, saltapi):
+        self.resource_payload = resource_payload
+        self.saltapi = saltapi
 
     def _execute(self):
         """
         Run resource specific api
         """
-        pepper = self.saltpepperapi(self.payload)
+
+        pepper = Pepper(
+            self.payload.uri,
+            self.payload.debug_http,
+            self.payload.verify_ssl)
+        salt_pepper_api = self.saltapi(pepper, self.payload)
         pepper_payload = salt.get_api_payload(self.payload)
-        pepper.run(pepper_payload)
+        salt_pepper_api.run(pepper_payload)
 
     def run(self):
         self._input()
@@ -22,7 +28,7 @@ class ConcourseApi(abc.ABC):
         self._output()
 
     def _input(self):
-        self.payload = self.payloadapi()
+        self.payload = self.resource_payload()
         self.payload.init(sys.stdin)
 
     @abc.abstractmethod

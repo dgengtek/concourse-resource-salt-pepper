@@ -1,22 +1,26 @@
-import pepper
+from pepper import PepperException
 import time
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class SaltAPI(pepper.Pepper):
-    def __init__(self, payload):
-        super().__init__(
-                payload.uri,
-                payload.debug_http,
-                payload.verify_ssl)
+class SaltAPI():
+    def __init__(self, pepper, payload):
+        self.pepper = pepper
         self.payload = payload
 
+    def login(self):
+        self.pepper.login(
+                self.payload.username,
+                self.payload.password,
+                self.payload.eauth)
+
     def logout(self):
-        if self.auth and 'token' in self.auth and self.auth['token']:
-            return self.req("/logout", [])
-        raise pepper.PepperException('You are not logged in.')
+        if self.pepper.auth \
+                and 'token' in self.pepper.auth and self.pepper.auth['token']:
+            return self.pepper.req("/logout", [])
+        raise PepperException('You are not logged in.')
 
     def poll_for_returns(self, load):
         '''
@@ -24,7 +28,7 @@ class SaltAPI(pepper.Pepper):
         cache for returns for the job.
         '''
         load['client'] = 'local_async'
-        async_ret = self.low(load)
+        async_ret = self.pepper.low(load)
         jid = async_ret['return'][0]['jid']
         nodes = async_ret['return'][0]['minions']
         ret_nodes = []
@@ -40,7 +44,7 @@ class SaltAPI(pepper.Pepper):
                 exit_code = 1
                 break
 
-            jid_ret = self.low([{
+            jid_ret = self.pepper.low([{
                 'client': 'runner',
                 'fun': 'jobs.lookup_jid',
                 'kwarg': {
@@ -70,7 +74,7 @@ class SaltAPI(pepper.Pepper):
             list(set(ret_nodes) ^ set(nodes)))
 
     def run(self, load):
-        load = {}
+        self.login()
         for exit_code, result in self.poll_for_returns(load):
             print(exit_code, result)
 

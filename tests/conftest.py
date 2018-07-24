@@ -43,7 +43,11 @@ def salturl():
 
 @pytest.fixture()
 def api(concourse_payload_check):
-    return salt.SaltAPI(concourse_payload_check)
+    salt_pepper = pepper.Pepper(
+            concourse_payload_check.uri,
+            concourse_payload_check.debug_http,
+            concourse_payload_check.verify_ssl)
+    return salt.SaltAPI(salt_pepper, concourse_payload_check)
 
 
 @pytest.fixture()
@@ -54,8 +58,8 @@ def api_authenticated(api, api_response):
 
 @pytest.fixture()
 def mock_req_200(mocker):
-    mocker.patch.object(salt.SaltAPI, "req", autospec=True)
-    salt.SaltAPI.req.return_value = {}
+    mocker.patch.object(pepper.Pepper, "req", autospec=True)
+    pepper.Pepper.req.return_value = {}
 
 
 @pytest.fixture()
