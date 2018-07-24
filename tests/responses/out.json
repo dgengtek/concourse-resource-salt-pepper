@@ -1,11 +1,16 @@
 {
-  "source": {},
+  "source": {
+      "uri": "https://salt:8000",
+      "eauth": "pam",
+      "username": "saltuser",
+      "password": "pass1word"
+  },
   "params": {
     "client": "local_async",
     "tgt": "*",
     "fun": "test.ping",
-    "arg": "",
-    "kwargs": "",
+    "arg": [],
+    "kwargs": {},
     "expr_form": "glob"
   }
 }
