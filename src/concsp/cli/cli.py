@@ -1,5 +1,6 @@
 import click
 # http://click.pocoo.org/5/options/
+from concsp import api
 
 
 @click.group("concsp")
@@ -12,22 +13,22 @@ def main(ctx, args=None):
 @main.command("check")
 @click.pass_context
 def main_check(ctx, args=None):
-    d = dict()
-    ctx.obj = d
+    concourse = api.build_check()
+    concourse.run()
 
 
 @main.command("in")
 @click.pass_context
 def main_in(ctx, args=None):
-    d = dict()
-    ctx.obj = d
+    concourse = api.build_in()
+    concourse.run()
 
 
 @main.command("out")
 @click.pass_context
 def main_out(ctx, args=None):
-    d = dict()
-    ctx.obj = d
+    concourse = api.build_out()
+    concourse.run()
 
 
 if __name__ == "__main__":
