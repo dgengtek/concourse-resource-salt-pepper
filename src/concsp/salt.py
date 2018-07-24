@@ -5,30 +5,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Options():
-    def __init__(self):
-        self.debug_http = False
-        self.ignore_ssl_errors = False
-        self.seconds_to_wait = 3
-        self.fail_if_minions_dont_respond = True
-        self.timeout = 30
-
-    @classmethod
-    def build(
-            cls,
-            url):
-        options = cls()
-        options.url = url
-        return options
-
-
 class SaltAPI(pepper.Pepper):
-    def __init__(self, options):
+    def __init__(self, payload):
         super().__init__(
-                options.url,
-                options.debug_http,
-                options.ignore_ssl_errors)
-        self.options = options
+                payload.uri,
+                payload.debug_http,
+                payload.verify_ssl)
+        self.payload = payload
 
     def logout(self):
         if self.auth and 'token' in self.auth and self.auth['token']:
@@ -53,7 +36,7 @@ class SaltAPI(pepper.Pepper):
         exit_code = 0
         while True:
             total_time = time.time() - start_time
-            if total_time > self.options.timeout:
+            if total_time > self.payload.timeout:
                 exit_code = 1
                 break
 
@@ -76,9 +59,9 @@ class SaltAPI(pepper.Pepper):
                 exit_code = 0
                 break
             else:
-                time.sleep(self.options.seconds_to_wait)
+                time.sleep(self.payload.seconds_to_wait)
 
-        exit_code = exit_code if self.options.fail_if_minions_dont_respond else 0
+        exit_code = exit_code if self.payload.fail_if_minions_dont_respond else 0
         yield exit_code, "{{Failed: {}}}".format(
             list(set(ret_nodes) ^ set(nodes)))
 
