@@ -1,2 +1,8 @@
 #!/bin/sh
-concsp in
+set -e
+readonly TMPDIR=/tmp
+readonly PAYLOAD=$(mktemp -u $TMPDIR/resource-salt-pepper_request.XXXXXXXX)
+readonly RESOURCE_RESPONSE=$(mktemp -u $TMPDIR/resource-salt-pepper_response.XXXXXXXX)
+readonly DESTINATION=$1
+tee "$PAYLOAD" | concsp in "$DESTINATION" | tee "$RESOURCE_RESPONSE"
+set +e

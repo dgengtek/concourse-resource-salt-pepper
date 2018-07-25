@@ -1,2 +1,7 @@
 #!/bin/sh
-concsp check
+set -e
+readonly TMPDIR=/tmp
+readonly PAYLOAD=$(mktemp -u $TMPDIR/resource-salt-pepper_request.XXXXXXXX)
+readonly RESOURCE_RESPONSE=$(mktemp -u $TMPDIR/resource-salt-pepper_response.XXXXXXXX)
+tee "$PAYLOAD" | concsp check | tee "$RESOURCE_RESPONSE"
+set +e
