@@ -64,7 +64,7 @@ class ConcourseApiOut(ConcourseApi):
     def _output(self):
         from datetime import datetime
         print(json.dumps({
-            'version': {'version': datetime.isoformat(datetime.now())},
+            'version': datetime.isoformat(datetime.now()),
             'metadata': [{
                 "username": self.payload.username,
                 "tgt": self.payload.tgt,
