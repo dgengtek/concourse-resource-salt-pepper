@@ -107,25 +107,32 @@ class SaltAPI():
 
 def print_result(rc, result):
     from collections import OrderedDict
-    minion, values = result
+    minion, values = result.popitem()
     if not rc:
         rc = 0
 
-    output = "[{}] {}\n".format(rc, minion)
-    stack = [(k, v, 1) for k, v in OrderedDict(values).items()]
+    output = "[{}] {}:\n".format(rc, minion)
+    if type(values) == dict:
+        stack = [(k, v, 1) for k, v in OrderedDict(values).items()]
+    else:
+        output += "{}".format(_indent_char(values))
+        print(output, file=sys.stderr)
+        return
     while stack:
-        key, items, nested = stack.pop()
+        key, items, nested = stack.pop(0)
         if type(items) == dict:
-            output += "{}\n".format(_indent_char(key, nested))
-            stack.insert(0, (*items, nested+1))
+            output += "{}:\n".format(_indent_char(key, nested))
+            for k, v in OrderedDict(items).items():
+                stack.append((k, v, nested+1))
         else:
-            output += "{}\n".format(_indent_char(items, nested))
+            output += "{}:\n".format(_indent_char(key, nested))
+            output += "{}\n".format(_indent_char(items, nested+1))
 
     print(output, file=sys.stderr)
 
 
-def _indent_char(self, s, count=1, spaces="4", character=" "):
-    result = s
+def _indent_char(s, count=1, spaces=4, character=" "):
+    result = s if type(s) == str else str(s)
     for i in range(count):
         result = textwrap.indent(result, character*spaces)
     return result
