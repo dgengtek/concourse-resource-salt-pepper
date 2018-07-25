@@ -5,9 +5,19 @@ import logging
 
 
 @click.group("concsp")
+@click.option(
+    "-l",
+    "--loglevel",
+    type=click.Choice(["info", "debug", "warning"]),
+    default="info")
 @click.pass_context
-def main(ctx, args=None):
-    logging.basicConfig(level=logging.INFO)
+def main(ctx, loglevel):
+    levels = {
+        "info": logging.INFO,
+        "debug": logging.DEBUG,
+        "warning": logging.WARNING,
+        }
+    logging.basicConfig(level=levels.get(loglevel))
     d = dict()
     ctx.obj = d
 
