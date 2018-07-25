@@ -52,7 +52,7 @@ class ConcourseApiIn(ConcourseApiNoop):
     def _output(self):
         print(json.dumps({
             'version': {},
-            }))
+            }, indent=4, sort_keys=True))
 
 
 class ConcourseApiCheck(ConcourseApiNoop):
@@ -70,7 +70,7 @@ class ConcourseApiOut(ConcourseApi):
                 "tgt": self.payload.tgt,
                 "fun": self.payload.fun,
                 }]
-            }))
+            }, indent=4, sort_keys=True))
 
 
 def build_check():
