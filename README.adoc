@@ -2,7 +2,23 @@
 github.com/dgengtek
 v.0.0.1, 2018-07-15
 
-## Deploying to Concourse
+== Configuring salt master
+
+=== Required module permissions
+Make sure to include the following in salts external auth permissions:
+
+
+[yaml]
+****
+external_auth:
+  <eauth backend>:
+    <user or group%>:
+      <@runner or @wheel>:
+        - <regex to match function>
+          - jobs.lookup_jid
+****
+
+== Deploying to Concourse
 
 [yaml]
 ****
