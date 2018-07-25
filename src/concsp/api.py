@@ -51,7 +51,8 @@ class ConcourseApiNoop(ConcourseApi):
 class ConcourseApiIn(ConcourseApiNoop):
     def _output(self):
         print(json.dumps({
-            'version': {},
+            'version': {'version': self.payload.version},
+            'metadata': []
             }, indent=4, sort_keys=True))
 
 
@@ -64,12 +65,12 @@ class ConcourseApiOut(ConcourseApi):
     def _output(self):
         from datetime import datetime
         print(json.dumps({
-            'version': {'date': datetime.isoformat(datetime.now())},
-            'metadata': [{
-                "username": self.payload.username,
-                "tgt": self.payload.tgt,
-                "fun": self.payload.fun,
-                }]
+            'version': {'version': datetime.isoformat(datetime.now())},
+            'metadata': [
+                {"name": "username", "value": self.payload.username},
+                {"name": "tgt", "value": self.payload.tgt},
+                {"name": "fun", "value": self.payload.fun},
+                ]
             }, indent=4, sort_keys=True))
 
 
