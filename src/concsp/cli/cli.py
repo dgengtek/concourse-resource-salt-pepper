@@ -1,21 +1,45 @@
+import click
+# http://click.pocoo.org/5/options/
 from concsp import api
-import sys
+import logging
 
 
-def main():
-    try:
-        cmd = sys.argv[1]
-    except IndexError:
-        return
-    concourse = None
-    if cmd == "in":
-        concourse = api.build_in()
-    elif cmd == "out":
-        concourse = api.build_out()
-    elif cmd == "check":
-        concourse = api.build_check()
+@click.group("concsp")
+@click.option(
+    "-l",
+    "--loglevel",
+    type=click.Choice(["info", "debug", "warning"]),
+    default="warning")
+@click.pass_context
+def main(ctx, loglevel):
+    levels = {
+        "info": logging.INFO,
+        "debug": logging.DEBUG,
+        "warning": logging.WARNING,
+        }
+    logging.basicConfig(level=levels.get(loglevel))
+    d = dict()
+    ctx.obj = d
+
+
+@main.command("check")
+@click.pass_context
+def main_check(ctx):
+    concourse = api.build_check()
     concourse.run()
 
 
-if __name__ == "__main__":
-    main()
+@main.command("in")
+@click.argument("destination", required=True)
+@click.pass_context
+def main_in(ctx, destination):
+    concourse = api.build_in()
+    concourse.run()
+
+
+@main.command("out")
+@click.argument("source", required=True)
+@click.pass_context
+def main_out(ctx, source):
+    concourse = api.build_out()
+    concourse.run()
