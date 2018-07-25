@@ -54,7 +54,6 @@ class ConcourseApiNoop(ConcourseApi):
 
 class ConcourseApiIn(ConcourseApiNoop):
     def _output(self):
-        import json
         print(json.dumps({
             "version": {},
             }))
@@ -67,10 +66,7 @@ class ConcourseApiCheck(ConcourseApiNoop):
 
 class ConcourseApiOut(ConcourseApi):
     def _output(self):
-        import json
-        print(json.dumps({
-            "version": {},
-            }))
+        print(json.dumps({}))
 
 
 def build_check():
