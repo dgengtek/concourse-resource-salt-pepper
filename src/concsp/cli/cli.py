@@ -20,15 +20,17 @@ def main_check(ctx, args=None):
 
 
 @main.command("in")
+@click.argument("destination", required=True)
 @click.pass_context
-def main_in(ctx, args=None):
+def main_in(ctx, destination):
     concourse = api.build_in()
     concourse.run()
 
 
 @main.command("out")
+@click.argument("source", required=True)
 @click.pass_context
-def main_out(ctx, args=None):
+def main_out(ctx, source):
     concourse = api.build_out()
     concourse.run()
 
