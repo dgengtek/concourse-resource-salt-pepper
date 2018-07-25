@@ -10,6 +10,12 @@ resource_types:
     repository: {{source_repository_git_workflow_image}}
     tag: v1
 
+- name: salt-pepper
+  type: docker-image
+  source:
+    repository: ((source_repository_salt_pepper_image))
+    tag: v1
+
 resources:
 - name: r-((project_name))-dev
   type: git-workflow
@@ -17,6 +23,14 @@ resources:
     uri: {{source_uri}}
     branch: dev
     private_key: ((r-git-ssh.private_key))
+
+- name: r-salt
+  type: salt-pepper
+  source:
+    uri: ((salt_api_uri))
+    username: ((r-salt.username))
+    password: ((r-salt.password))
+    eauth: ldap
 
 - name: r-docker-image-build
   type: docker-image
@@ -70,3 +84,15 @@ jobs:
           - branch: release
             ff_only: True
         repository: r-((project_name))-dev
+
+- name: j-salt
+  public: true
+  plan:
+    - get: r-((project_name))-dev
+      trigger: True
+      passed:
+        - j-build-image
+    - put: r-salt
+      params:
+        tgt: "*"
+        fun: "test.ping"

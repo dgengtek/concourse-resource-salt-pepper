@@ -1,6 +1,8 @@
 source_repository_git_workflow_image: "docker.domain.tld/concourse/resource/git-workflow"
+source_repository_salt_pepper_image: "docker.domain.tld/concourse/resource/salt-pepper"
 project_name: "concourse-salt-pepper"
 source_uri: "git@git.domain.tld:concourse-salt-pepper" 
+salt_api_uri: "https://salt.domain.tld:8000"
 smtp_host: "smtp.domain.tld" 
 smtp_from: "concourse-build@domain.tld" 
 smtp_to: "build@domain.tld" 
