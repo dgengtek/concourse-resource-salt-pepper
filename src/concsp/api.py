@@ -42,7 +42,7 @@ class ConcourseApiNoop(ConcourseApi):
         pass
 
     def run(self):
-        pass
+        self._output()
 
     def _output(self):
         pass
