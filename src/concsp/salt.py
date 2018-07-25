@@ -62,9 +62,7 @@ class SaltAPI():
             responded = set(jid_ret['return'][0].keys()) ^ set(ret_nodes)
             logger.info("Nodes responded: {}".format(responded))
             for node in responded:
-                yield None, "{{{}: {}}}".format(
-                    node,
-                    jid_ret['return'][0][node])
+                yield None, {node: jid_ret['return'][0][node]}
             ret_nodes = list(jid_ret['return'][0].keys())
 
             if set(ret_nodes) == set(nodes):
@@ -80,8 +78,7 @@ class SaltAPI():
         else:
             exit_code = 0
 
-        yield exit_code, "{{Failed: {}}}".format(
-            list(set(ret_nodes) ^ set(nodes)))
+        yield exit_code, {"Failed": list(set(ret_nodes) ^ set(nodes))}
 
     def run(self, load):
         try:
