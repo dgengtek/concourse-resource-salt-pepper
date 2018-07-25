@@ -2,6 +2,7 @@ import click
 # http://click.pocoo.org/5/options/
 from concsp import api
 import logging
+import sys
 
 
 @click.group("concsp")
@@ -42,4 +43,8 @@ def main_in(ctx, destination):
 @click.pass_context
 def main_out(ctx, source):
     concourse = api.build_out(ctx.obj)
-    concourse.run()
+    try:
+        concourse.run()
+    except PepperException as exc:
+        log.error(exc)
+        sys.exit(1)
