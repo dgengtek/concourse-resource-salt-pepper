@@ -3,10 +3,12 @@ from pepper import Pepper
 import abc
 import sys
 import json
+import logging
 
 
 class ConcourseApi(abc.ABC):
-    def __init__(self, resource_payload, saltapi):
+    def __init__(self, context, resource_payload, saltapi):
+        self.context = context
         self.resource_payload = resource_payload
         self.saltapi = saltapi
 
@@ -14,7 +16,6 @@ class ConcourseApi(abc.ABC):
         """
         Run resource specific api
         """
-
         pepper = Pepper(
             self.payload.uri,
             self.payload.debug_http,
@@ -25,8 +26,20 @@ class ConcourseApi(abc.ABC):
 
     def run(self):
         self._input()
+        self._setup()
         self._execute()
         self._output()
+
+    def _setup(self):
+        levels = {
+            "debug": logging.DEBUG,
+            "warning": logging.WARNING,
+            "info": logging.INFO,
+            }
+        loglevel = self.context.get("loglevel")
+        if not loglevel:
+            loglevel = self.payload.loglevel
+        logging.basicConfig(loglevel=levels.get(loglevel))
 
     def _input(self):
         self.payload = self.resource_payload()
@@ -74,17 +87,22 @@ class ConcourseApiOut(ConcourseApi):
             }, indent=4, sort_keys=True))
 
 
-def build_check():
+def build_check(context):
     return ConcourseApiCheck(
-            payload.ResourcePayload,
-            salt.SaltAPI)
+        context,
+        payload.ResourcePayload,
+        salt.SaltAPI)
 
 
-def build_out():
+def build_out(context):
     return ConcourseApiOut(
-            payload.ResourcePayloadOut,
-            salt.SaltAPI)
+        context,
+        payload.ResourcePayloadOut,
+        salt.SaltAPI)
 
 
-def build_in():
-    return ConcourseApiIn()
+def build_in(context):
+    return ConcourseApiIn(
+        context,
+        payload.ResourcePayload,
+        salt.SaltAPI)

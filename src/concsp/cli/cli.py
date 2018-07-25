@@ -8,8 +8,7 @@ import logging
 @click.option(
     "-l",
     "--loglevel",
-    type=click.Choice(["info", "debug", "warning"]),
-    default="warning")
+    type=click.Choice(["info", "debug", "warning"]))
 @click.pass_context
 def main(ctx, loglevel):
     levels = {
@@ -17,15 +16,16 @@ def main(ctx, loglevel):
         "debug": logging.DEBUG,
         "warning": logging.WARNING,
         }
-    logging.basicConfig(level=levels.get(loglevel))
+    logging.basicConfig(level=levels.get(loglevel, logging.WARNING))
     d = dict()
+    d["loglevel"] = loglevel
     ctx.obj = d
 
 
 @main.command("check")
 @click.pass_context
 def main_check(ctx):
-    concourse = api.build_check()
+    concourse = api.build_check(ctx.obj)
     concourse.run()
 
 
@@ -33,7 +33,7 @@ def main_check(ctx):
 @click.argument("destination", required=True)
 @click.pass_context
 def main_in(ctx, destination):
-    concourse = api.build_in()
+    concourse = api.build_in(ctx.obj)
     concourse.run()
 
 
@@ -41,5 +41,5 @@ def main_in(ctx, destination):
 @click.argument("source", required=True)
 @click.pass_context
 def main_out(ctx, source):
-    concourse = api.build_out()
+    concourse = api.build_out(ctx.obj)
     concourse.run()
