@@ -71,7 +71,7 @@ class SaltAPI():
                 break
             else:
                 logger.info("Not all nodes responded. Trying again...")
-                time.sleep(self.payload.seconds_to_wait)
+                time.sleep(self.payload.sleep_time)
 
         if self.payload.fail_if_minions_dont_respond:
             exit_code = exit_code

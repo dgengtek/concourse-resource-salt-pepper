@@ -98,6 +98,7 @@ class ResourcePayload(object):
         self.expr_form = self.source.get("expr_form", "glob")
         self.fail_if_minions_dont_respond = self.source.get(
                 "fail_if_minions_dont_respond", True)
+        self.sleep_time = self.source.get("sleep_time", 3)
 
     def parse_payload_params(self):
         # Optional
