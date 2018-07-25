@@ -2,6 +2,7 @@ from pepper import PepperException
 import time
 import logging
 import sys
+import textwrap
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +102,33 @@ class SaltAPI():
             self.payload.kwargs))
 
         for exit_code, result in self.poll_for_returns(load):
-            print(exit_code, result)
+            print_result(exit_code, result)
+
+
+def print_result(rc, result):
+    from collections import OrderedDict
+    minion, values = result
+    if not rc:
+        rc = 0
+
+    output = "[{}] {}\n".format(rc, minion)
+    stack = [(k, v, 1) for k, v in OrderedDict(values).items()]
+    while stack:
+        key, items, nested = stack.pop()
+        if type(items) == dict:
+            output += "{}\n".format(_indent_char(key, nested))
+            stack.insert(0, (*items, nested+1))
+        else:
+            output += "{}\n".format(_indent_char(items, nested))
+
+    print(output, file=sys.stderr)
+
+
+def _indent_char(self, s, count=1, spaces="4", character=" "):
+    result = s
+    for i in range(count):
+        result = textwrap.indent(result, character*spaces)
+    return result
 
 
 def get_api_payload(payload):
