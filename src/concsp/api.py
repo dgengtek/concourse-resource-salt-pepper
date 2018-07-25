@@ -50,10 +50,10 @@ class ConcourseApiNoop(ConcourseApi):
 
 class ConcourseApiIn(ConcourseApiNoop):
     def _output(self):
-        print(json.dumps({
-            'version': {'version': self.payload.version},
-            'metadata': []
-            }, indent=4, sort_keys=True))
+        print(json.dumps(
+            {'version': {}},
+            indent=4,
+            sort_keys=True))
 
 
 class ConcourseApiCheck(ConcourseApiNoop):
