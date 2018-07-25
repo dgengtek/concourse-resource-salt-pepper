@@ -3,6 +3,9 @@ import click
 from concsp import api
 import logging
 import sys
+from pepper import PepperException
+
+logger = logging.getLogger(__name__)
 
 
 @click.group("concsp")
@@ -46,5 +49,5 @@ def main_out(ctx, source):
     try:
         concourse.run()
     except PepperException as exc:
-        log.error(exc)
+        logger.error(exc)
         sys.exit(1)
