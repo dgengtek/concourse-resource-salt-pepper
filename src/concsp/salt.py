@@ -108,7 +108,7 @@ def print_result(rc, result):
     if not rc:
         rc = 0
 
-    output = "[{}] {}:\n".format(rc, minion)
+    output = "{} ==> {}\n".format(minion, rc)
     if type(values) == dict:
         stack = [(k, v, 1) for k, v in OrderedDict(values).items()]
     else:
@@ -120,7 +120,7 @@ def print_result(rc, result):
         if type(items) == dict:
             output += "{}:\n".format(_indent_char(key, nested))
             for k, v in OrderedDict(items).items():
-                stack.append((k, v, nested+1))
+                stack.insert(0, (k, v, nested+1))
         else:
             output += "{}:\n".format(_indent_char(key, nested))
             output += "{}\n".format(_indent_char(items, nested+1))
