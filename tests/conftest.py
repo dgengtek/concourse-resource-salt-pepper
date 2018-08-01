@@ -22,6 +22,7 @@ def payload_out():
     with open("tests/responses/out.json") as f:
         return json.load(f)
 
+
 @pytest.fixture()
 def concourse_payload_check(payload_check):
     payload = ResourcePayload()
@@ -84,3 +85,105 @@ def api_500(monkeypatch, api):
     error_500 = error_mock.build_raise_http_error(None, 500)
     monkeypatch.setattr(pepper.libpepper, "urlopen",  error_500)
     return api
+
+
+@pytest.fixture()
+def state_output():
+    return [{"minion1": {
+        "cmd_|-Run test command get ips_|-ifconfig_|-run": {
+            "comment": "Command \"ifconfig\" would have been executed", 
+            "name": "ifconfig", 
+            "start_time": "20:59:43.546975", 
+            "result": None, 
+            "duration": 4.595, 
+            "__run_num__": 3, 
+            "__sls__": "test.state", 
+            "changes": {}, 
+            "__id__": "Run test command get ips"
+        }, 
+        "cmd_|-Run test command list dirs_|-ls /_|-run": {
+            "comment": "Command \"ls /\" would have been executed", 
+            "name": "ls /", 
+            "start_time": "20:59:43.545041", 
+            "result": None, 
+            "duration": 0.639, 
+            "__run_num__": 0, 
+            "__sls__": "test.state", 
+            "changes": {}, 
+            "__id__": "Run test command list dirs"
+        }, 
+        "cmd_|-Run test command get blks_|-lsblk_|-run": {
+            "comment": "Command \"lsblk\" would have been executed", 
+            "name": "lsblk", 
+            "start_time": "20:59:43.546400", 
+            "result": None, 
+            "duration": 0.47, 
+            "__run_num__": 2, 
+            "__sls__": "test.state", 
+            "changes": {}, 
+            "__id__": "Run test command get blks"
+        }, 
+        "cmd_|-Run test command get uptime_|-uptime_|-run": {
+            "comment": "Command \"uptime\" would have been executed", 
+            "name": "uptime", 
+            "start_time": "20:59:43.545837", 
+            "result": None, 
+            "duration": 0.457, 
+            "__run_num__": 1, 
+            "__sls__": "test.state", 
+            "changes": {}, 
+            "__id__": "Run test command get uptime"
+        }}
+        },
+        {
+            "minion2": {
+                "cmd_|-Run test command get ips_|-ifconfig_|-run": {
+                    "comment": "Command \"ifconfig\" would have been executed", 
+                    "name": "ifconfig", 
+                    "start_time": "18:59:44.276802", 
+                    "result": None, 
+                    "duration": 0.564, 
+                    "__run_num__": 3, 
+                    "__sls__": "test.state", 
+                    "changes": {}, 
+                    "__id__": "Run test command get ips"
+                }, 
+                "cmd_|-Run test command list dirs_|-ls /_|-run": {
+                    "comment": "Command \"ls /\" would have been executed", 
+                    "name": "ls /", 
+                    "start_time": "18:59:44.274431", 
+                    "result": None, 
+                    "duration": 0.748, 
+                    "__run_num__": 0, 
+                    "__sls__": "test.state", 
+                    "changes": {}, 
+                    "__id__": "Run test command list dirs"
+                }, 
+                "cmd_|-Run test command get blks_|-lsblk_|-run": {
+                    "comment": "Command \"lsblk\" would have been executed", 
+                    "name": "lsblk", 
+                    "start_time": "18:59:44.276096", 
+                    "result": None, 
+                    "duration": 0.569, 
+                    "__run_num__": 2, 
+                    "__sls__": "test.state", 
+                    "changes": {}, 
+                    "__id__": "Run test command get blks"
+                }, 
+                "cmd_|-Run test command get uptime_|-uptime_|-run": {
+                    "comment": "Command \"uptime\" would have been executed", 
+                    "name": "uptime", 
+                    "start_time": "18:59:44.275368", 
+                    "result": None, 
+                    "duration": 0.586, 
+                    "__run_num__": 1, 
+                    "__sls__": "test.state", 
+                    "changes": {}, 
+                    "__id__": "Run test command get uptime"
+                }
+            }
+        },
+        {
+            "minion3": "Minion did not return. [Not connected]"
+        }
+        ]
