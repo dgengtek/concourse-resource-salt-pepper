@@ -5,12 +5,16 @@ import sys
 import json
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class ConcourseApi(abc.ABC):
     def __init__(self, context, resource_payload, saltapi):
         self.context = context
         self.resource_payload = resource_payload
         self.saltapi = saltapi
+        self.disable_input = False
+        self.payload = {}
 
     def _execute(self):
         """
@@ -22,10 +26,15 @@ class ConcourseApi(abc.ABC):
             self.payload.verify_ssl)
         salt_pepper_api = self.saltapi(pepper, self.payload)
         pepper_payload = salt.get_api_payload(self.payload)
+        logger.info("Running pepper with payload ==> {}".format(pepper_payload))
         salt_pepper_api.run(pepper_payload)
 
     def run(self):
-        self._input()
+        if not self.disable_input:
+            self._input()
+        else:
+            self.payload = self.resource_payload()
+            self.payload.init(self.context)
         self._setup()
         self._execute()
         self._output()
@@ -40,6 +49,12 @@ class ConcourseApi(abc.ABC):
         if not loglevel:
             loglevel = self.payload.loglevel
         logging.basicConfig(loglevel=levels.get(loglevel))
+
+        # override options from cli
+        logger.info(
+                "Override payload options with cli options"
+                "{}".format(self.context))
+        self.payload.update(self.context)
 
     def _input(self):
         self.payload = self.resource_payload()
@@ -105,4 +120,11 @@ def build_in(context):
     return ConcourseApiIn(
         context,
         payload.ResourcePayload,
+        salt.SaltAPI)
+
+
+def build_run(context, disable_input=True):
+    return ConcourseApiOut(
+        context,
+        payload.ResourcePayloadOut,
         salt.SaltAPI)

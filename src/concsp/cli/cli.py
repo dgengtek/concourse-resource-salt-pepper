@@ -26,6 +26,41 @@ def main(ctx, loglevel):
     ctx.obj = d
 
 
+@main.command("run")
+@click.argument(
+    "tgt",
+    required=True)
+@click.argument(
+    "fun",
+    required=True)
+@click.argument(
+    "args",
+    required=False)
+@click.option("--username")
+@click.option("--password")
+@click.option(
+    "--eauth")
+@click.option(
+    "--uri",
+    default="http://salt:8000")
+@click.pass_context
+def main_run(ctx, username, password, tgt, fun, args, uri, eauth):
+    ctx.obj["source"] = {}
+    ctx.obj["params"] = {}
+    ctx.obj["source"]["username"] = username
+    ctx.obj["source"]["password"] = password
+    ctx.obj["source"]["eauth"] = eauth
+    ctx.obj["source"]["uri"] = uri
+    ctx.obj["params"]["tgt"] = tgt
+    ctx.obj["params"]["fun"] = fun
+    if not args:
+        args = ""
+    ctx.obj["params"]["args"] = args.split(",")
+    concourse = api.build_run(ctx.obj)
+    concourse.disable_input = True
+    concourse.run()
+
+
 @main.command("check")
 @click.pass_context
 def main_check(ctx):
