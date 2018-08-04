@@ -14,9 +14,9 @@ class SaltAPI():
 
     def login(self):
         self.pepper.login(
-                self.payload.username,
-                self.payload.password,
-                self.payload.eauth)
+            self.payload.username,
+            self.payload.password,
+            self.payload.eauth)
 
     def logout(self):
         if self.pepper.auth \
