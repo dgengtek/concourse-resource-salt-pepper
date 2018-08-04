@@ -73,41 +73,41 @@ class ResourcePayload(object):
         self.version = self.payload.get("version")
         if self.version is None:
             self.version = {}
-        self.parse_payload_source()
-        self.parse_payload_params()
+        self.parse_payload_source(self.source)
+        self.parse_payload_params(self.params)
         self._verify()
 
-    def parse_payload_source(self):
+    def parse_payload_source(self, source):
         try:
             # Mandatory
-            self.uri = self.source["uri"]
-            self.username = self.source["username"]
-            self.password = self.source["password"]
-            self.eauth = self.source.get("eauth", "pam")
+            self.uri = source["uri"]
+            self.username = source["username"]
+            self.password = source["password"]
+            self.eauth = source.get("eauth", "auto")
         except KeyError as value_error:
             raise ResourcePayloadSourceException(
                     "Source config '{}' required".format(value_error))
         # Optional
-        self.debug_http = self.source.get("debug_http", False)
-        self.verify_ssl = self.source.get("verify_ssl", True)
-        self.outputter = self.source.get("outputter", True)
-        self.timeout = self.source.get("timeout", 60)
-        self.cache_token = self.source.get("cache_token", False)
-        self.loglevel = self.source.get("loglevel", "warning")
-        self.client = self.source.get("client", "local_async")
-        self.expr_form = self.source.get("expr_form", "glob")
-        self.fail_if_minions_dont_respond = self.source.get(
+        self.debug_http = source.get("debug_http", False)
+        self.verify_ssl = source.get("verify_ssl", True)
+        self.outputter = source.get("outputter", True)
+        self.timeout = source.get("timeout", 60)
+        self.cache_token = source.get("cache_token", False)
+        self.loglevel = source.get("loglevel", "warning")
+        self.client = source.get("client", "local_async")
+        self.expr_form = source.get("expr_form", "glob")
+        self.fail_if_minions_dont_respond = source.get(
                 "fail_if_minions_dont_respond", True)
-        self.sleep_time = self.source.get("sleep_time", 3)
+        self.sleep_time = source.get("sleep_time", 3)
 
-    def parse_payload_params(self):
+    def parse_payload_params(self, params):
         # Optional
-        self.client = self.params.get("client", self.client)
-        self.expr_form = self.params.get("expr_form", self.expr_form)
-        self.tgt = self.params.get("tgt", None)
-        self.fun = self.params.get("fun", None)
-        self.args = self.params.get("args", [])
-        self.kwargs = self.params.get("kwargs", {})
+        self.client = params.get("client", self.client)
+        self.expr_form = params.get("expr_form", self.expr_form)
+        self.tgt = params.get("tgt", None)
+        self.fun = params.get("fun", None)
+        self.args = params.get("args", [])
+        self.kwargs = params.get("kwargs", {})
 
     def _verify(self):
         if type(self.args) != list:
@@ -115,20 +115,24 @@ class ResourcePayload(object):
         if type(self.kwargs) != dict:
             raise ResourcePayloadParameterException("kwargs is not a dict")
 
+    def update(self, data):
+        self.parse_payload_source(data.get("source", {}))
+        self.parse_payload_params(data.get("params", {}))
+
 
 class ResourcePayloadOut(ResourcePayload):
-    def parse_payload_params(self):
+    def parse_payload_params(self, params):
         try:
             # Mandatory
-            self.tgt = self.params["tgt"]
-            self.fun = self.params["fun"]
+            self.tgt = params["tgt"]
+            self.fun = params["fun"]
         except KeyError as value_error:
             raise ResourcePayloadParameterException(
                     "Params config '{}' required".format(value_error))
-        self.client = self.params.get("client", self.client)
-        self.expr_form = self.params.get("expr_form", self.expr_form)
-        self.args = self.params.get("args", [])
-        self.kwargs = self.params.get("kwargs", {})
+        self.client = params.get("client", self.client)
+        self.expr_form = params.get("expr_form", self.expr_form)
+        self.args = params.get("args", [])
+        self.kwargs = params.get("kwargs", {})
 
 
 class ResourcePayloadException(Exception):
