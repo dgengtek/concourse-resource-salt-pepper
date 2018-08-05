@@ -42,7 +42,7 @@ def main(ctx, loglevel):
     "--eauth")
 @click.option(
     "--uri",
-    default="http://salt:8000")
+    default="https://salt:8000")
 @click.pass_context
 def main_run(ctx, username, password, tgt, fun, args, uri, eauth):
     ctx.obj["source"] = {}
