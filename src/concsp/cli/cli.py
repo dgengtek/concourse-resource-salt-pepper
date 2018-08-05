@@ -39,7 +39,8 @@ def main(ctx, loglevel):
 @click.option("--username")
 @click.option("--password")
 @click.option(
-    "--eauth")
+    "--eauth",
+    default="auto")
 @click.option(
     "--uri",
     default="https://salt:8000")
