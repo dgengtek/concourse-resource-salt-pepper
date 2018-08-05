@@ -26,6 +26,9 @@ class ConcourseApi(abc.ABC):
             self.payload.verify_ssl)
         salt_pepper_api = self.saltapi(pepper, self.payload)
         pepper_payload = salt.get_api_payload(self.payload)
+        logger.debug(
+            "Running salt pepper with payload:"
+            "{}".format(pepper_payload))
         salt_pepper_api.run(pepper_payload)
 
     def run(self):

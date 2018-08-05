@@ -35,6 +35,7 @@ def main(ctx, loglevel):
     required=True)
 @click.argument(
     "args",
+    nargs=-1,
     required=False)
 @click.option("--username")
 @click.option("--password")
@@ -54,9 +55,8 @@ def main_run(ctx, username, password, tgt, fun, args, uri, eauth):
     ctx.obj["source"]["uri"] = uri
     ctx.obj["params"]["tgt"] = tgt
     ctx.obj["params"]["fun"] = fun
-    if not args:
-        args = ""
-    ctx.obj["params"]["args"] = args.split(",")
+    if args:
+        ctx.obj["params"]["args"] = list(args)
     concourse = api.build_run(ctx.obj)
     concourse.disable_input = True
     concourse.run()
