@@ -85,5 +85,7 @@ def main_out(ctx, source):
     try:
         concourse.run()
     except PepperException as exc:
-        logger.error(exc)
+        logger.error(
+            "Exception in out:"
+            "{}".format(exc))
         sys.exit(1)
