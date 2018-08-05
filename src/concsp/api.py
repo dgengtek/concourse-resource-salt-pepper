@@ -13,7 +13,6 @@ class ConcourseApi(abc.ABC):
         self.context = context
         self.resource_payload = resource_payload
         self.saltapi = saltapi
-        self.disable_input = False
         self.payload = {}
 
     def _execute(self):
@@ -32,11 +31,7 @@ class ConcourseApi(abc.ABC):
         salt_pepper_api.run(pepper_payload)
 
     def run(self):
-        if not self.disable_input:
-            self._input()
-        else:
-            self.payload = self.resource_payload()
-            self.payload.init(self.context)
+        self._input()
         self._setup()
         self._execute()
         self._output()
@@ -51,9 +46,6 @@ class ConcourseApi(abc.ABC):
         if not loglevel:
             loglevel = self.payload.loglevel
         logging.basicConfig(loglevel=levels.get(loglevel))
-
-        # override options from cli
-        self.payload.update(self.context)
 
     def _input(self):
         self.payload = self.resource_payload()
@@ -101,6 +93,28 @@ class ConcourseApiOut(ConcourseApi):
             }, indent=4, sort_keys=True))
 
 
+class ConcourseApiRun(ConcourseApiOut):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.disable_input = False
+
+    def _setup(self):
+        super()._setup()
+
+        # override options from cli
+        self.payload.update(self.context)
+
+    def run(self):
+        if not self.disable_input:
+            self._input()
+        else:
+            self.payload = self.resource_payload()
+            self.payload.init(self.context)
+        self._setup()
+        self._execute()
+        self._output()
+
+
 def build_check(context):
     return ConcourseApiCheck(
         context,
@@ -123,7 +137,7 @@ def build_in(context):
 
 
 def build_run(context, disable_input=True):
-    return ConcourseApiOut(
+    return ConcourseApiRun(
         context,
         payload.ResourcePayloadOut,
         salt.SaltAPI)
