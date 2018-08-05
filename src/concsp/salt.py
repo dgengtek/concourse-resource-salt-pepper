@@ -13,12 +13,15 @@ class SaltAPI():
         self.payload = payload
 
     def login(self):
+        logger.debug("Trying to log into salt {}".format(self.payload.uri))
         self.pepper.login(
             self.payload.username,
             self.payload.password,
             self.payload.eauth)
+        logger.debug("Logged in via pepper.")
 
     def logout(self):
+        logger.debug("Trying to log out of salt.")
         if self.pepper.auth \
                 and 'token' in self.pepper.auth and self.pepper.auth['token']:
             return self.pepper.req("/logout", [])
@@ -85,7 +88,7 @@ class SaltAPI():
             self.login()
         except PepperException as exc:
             logger.error(
-                    "{}. Failed to login as {} using eauth: {}."
+                    "{}. Failed to login as user '{}' using eauth: {}."
                     .format(exc, self.payload.username, self.payload.eauth))
             logger.debug("password='{}'".format(self.payload.password))
             sys.exit(1)
