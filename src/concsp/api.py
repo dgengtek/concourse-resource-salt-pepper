@@ -26,7 +26,6 @@ class ConcourseApi(abc.ABC):
             self.payload.verify_ssl)
         salt_pepper_api = self.saltapi(pepper, self.payload)
         pepper_payload = salt.get_api_payload(self.payload)
-        logger.info("Running pepper with payload ==> {}".format(pepper_payload))
         salt_pepper_api.run(pepper_payload)
 
     def run(self):
@@ -51,9 +50,6 @@ class ConcourseApi(abc.ABC):
         logging.basicConfig(loglevel=levels.get(loglevel))
 
         # override options from cli
-        logger.info(
-                "Override payload options with cli options"
-                "{}".format(self.context))
         self.payload.update(self.context)
 
     def _input(self):
