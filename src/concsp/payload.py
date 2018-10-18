@@ -91,7 +91,7 @@ class ResourcePayload(object):
         self.debug_http = source.get("debug_http", False)
         self.verify_ssl = source.get("verify_ssl", True)
         self.outputter = source.get("outputter", True)
-        self.timeout = source.get("timeout", 60)
+        self.timeout = source.get("timeout", 300)
         self.cache_token = source.get("cache_token", False)
         self.loglevel = source.get("loglevel", "warning")
         self.client = source.get("client", "local_async")
