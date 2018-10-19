@@ -19,6 +19,8 @@ resource_types:
 resources:
 - name: r-((project_name))-dev
   type: git-workflow
+  webhook_token: ((webhook_token))
+  check_every: 168h
   source:
     uri: {{source_uri}}
     branch: dev
@@ -46,6 +48,7 @@ resources:
       port: "587" # this must be a string
       username: ((r-email.username))
       password: ((r-email.password))
+      host_origin: {{smtp_host}}
     from: {{smtp_from}}
     to: 
       - {{smtp_to}}
