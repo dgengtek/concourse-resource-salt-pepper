@@ -1,5 +1,4 @@
 from pepper import PepperException
-import pepper
 import time
 import logging
 import sys
@@ -67,11 +66,13 @@ class SaltAPI():
                 }])
             except PepperException as exc:
                 logger.error(
-                        "Retrying job lookup because of Pepper Error: {}.".format(exc))
+                    "Retrying job lookup because of Pepper Error: {}."
+                    .format(exc))
                 continue
             except urllib.error.HTTPError as exc:
                 logger.error(
-                        "Retrying job lookup because of HTTP Error: {}.".format(exc))
+                    "Retrying job lookup because of HTTP Error: {}."
+                    .format(exc))
                 continue
 
             responded = set(jid_ret['return'][0].keys()) ^ set(ret_nodes)
