@@ -1,8 +1,10 @@
 from pepper import PepperException
+import pepper
 import time
 import logging
 import sys
 import textwrap
+import urllib
 
 logger = logging.getLogger(__name__)
 
@@ -54,13 +56,23 @@ class SaltAPI():
                 break
 
             logger.info("Runner jobs.lookup_jid for jid: {}".format(jid))
-            jid_ret = self.pepper.low([{
-                'client': 'runner',
-                'fun': 'jobs.lookup_jid',
-                'kwarg': {
-                    'jid': jid,
-                },
-            }])
+            try:
+                jid_ret = self.pepper.low([{
+                    'client': 'runner',
+                    'fun': 'jobs.lookup_jid',
+                    'timeout': 120,
+                    'kwarg': {
+                        'jid': jid,
+                    },
+                }])
+            except PepperException as exc:
+                logger.error(
+                        "Retrying job lookup because of Pepper Error: {}.".format(exc))
+                continue
+            except urllib.error.HTTPError as exc:
+                logger.error(
+                        "Retrying job lookup because of HTTP Error: {}.".format(exc))
+                continue
 
             responded = set(jid_ret['return'][0].keys()) ^ set(ret_nodes)
             logger.info("Nodes responded: {}".format(responded))
