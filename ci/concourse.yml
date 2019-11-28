@@ -45,7 +45,7 @@ resources:
   source:
     smtp:
       host: {{smtp_host}}
-      port: "587" # this must be a string
+      port: "25" # this must be a string
       username: ((r-email.username))
       password: ((r-email.password))
       host_origin: {{smtp_host}}
@@ -62,7 +62,7 @@ jobs:
     - put: r-docker-image-build
       params:
         build: r-((project_name))-dev
-        dockerfile: r-((project_name))-dev/ci/Dockerfile
+        dockerfile: r-((project_name))-dev/Dockerfile
         build_args: 
           http_proxy: {{http_proxy}}
       on_failure:
