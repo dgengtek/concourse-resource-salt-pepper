@@ -19,13 +19,13 @@ jobs:
     - get: r-((project_name))-dev
       params:
         fetch:
-        - release
+        - master
       passed:
       - j-build-image
       trigger: true
     - params:
         merge_to:
-        - branch: release
+        - branch: master
           ff_only: true
         repository: r-((project_name))-dev
       put: r-((project_name))-dev
