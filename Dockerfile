@@ -1,21 +1,10 @@
-FROM alpine:edge AS resource
+FROM docker.p.intranet.dgeng.eu/python:3.8-slim-buster AS resource
 
-ARG http_proxy
-ARG author
-
-ENV http_proxy=$http_proxy
-ENV https_proxy=$http_proxy
-
-RUN echo -e "http_proxy=$http_proxy\nhttps_proxy=$https_proxy" >> /etc/environment
-
-RUN apk add --no-cache \
-    python3 \
-    python3-dev \
-    make
+RUN apt-get update \
+  && apt-get install -y make
 
 ADD assets/ /opt/resource/
 RUN chmod +x /opt/resource/*
-
 
 WORKDIR /concsp
 ADD . /concsp/
@@ -32,4 +21,6 @@ WORKDIR /concsp
 RUN make test
 
 FROM resource
-RUN apk del make
+RUN apt-get purge -y make \
+  && apt-get autoremove -y \
+  && apt-get autoclean -y

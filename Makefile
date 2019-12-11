@@ -97,5 +97,5 @@ dev:
 devrm:
 	python3 setup.py develop --uninstall
 
-flysp:
+ci:
 	fly -t intranet sp -p resource-salt-pepper -c ci/concourse.yml -l ciparams.yml
