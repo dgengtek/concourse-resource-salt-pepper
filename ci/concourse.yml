@@ -1,7 +1,7 @@
 jobs:
 - name: j-build-image
   plan:
-  - get: r-concourse-salt-pepper
+  - get: r-concourse-resource-salt-pepper
     trigger: true
   - on_failure:
       params:
@@ -9,13 +9,13 @@ jobs:
         subject_text: 'Build failed: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}'
       put: send-email
     params:
-      build: r-concourse-salt-pepper
+      build: r-concourse-resource-salt-pepper
       build_args:
         http_proxy: ((http_proxy))
     put: r-docker-image-build
 - name: j-salt
   plan:
-  - get: r-concourse-salt-pepper
+  - get: r-concourse-resource-salt-pepper
     passed:
     - j-build-image
     trigger: true
@@ -35,7 +35,7 @@ resource_types:
   type: docker-image
 resources:
 - check_every: 21900h
-  name: r-concourse-salt-pepper
+  name: r-concourse-resource-salt-pepper
   source:
     branch: ((git_branch))
     private_key: ((r-git-ssh.private_key))
