@@ -1,94 +1,67 @@
 jobs:
-  - name: j-build-image
-    plan:
-    - get: r-((project_name))-dev
-      trigger: true
-    - on_failure:
-        params:
-          body_text: 'Docker image build failed: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}'
-          subject_text: 'Build failed: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}'
-        put: send-email
+- name: j-build-image
+  plan:
+  - get: r-concourse-salt-pepper
+    trigger: true
+  - on_failure:
       params:
-        build: r-((project_name))-dev
-        build_args:
-          http_proxy: ((http_proxy))
-        dockerfile: r-((project_name))-dev/Dockerfile
-      put: r-docker-image-build
-  - name: j-merge-ff
-    plan:
-    - get: r-((project_name))-dev
-      params:
-        fetch:
-        - master
-      passed:
-      - j-build-image
-      trigger: true
-    - params:
-        merge_to:
-        - branch: master
-          ff_only: true
-        repository: r-((project_name))-dev
-      put: r-((project_name))-dev
-  - name: j-salt
-    plan:
-    - get: r-((project_name))-dev
-      passed:
-      - j-build-image
-      trigger: true
-    - params:
-        fun: test.ping
-        tgt: '*'
-      put: r-salt
-    public: true
-
-
+        body_text: 'Docker image build failed: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}'
+        subject_text: 'Build failed: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}'
+      put: send-email
+    params:
+      build: r-concourse-salt-pepper
+      build_args:
+        http_proxy: ((http_proxy))
+    put: r-docker-image-build
+- name: j-salt
+  plan:
+  - get: r-concourse-salt-pepper
+    passed:
+    - j-build-image
+    trigger: true
+  - params:
+      fun: test.ping
+      tgt: '*'
+    put: r-salt
+  public: true
 resource_types:
-  - name: email
-    source:
-      repository: pcfseceng/email-resource
-    type: docker-image
-  - name: git-workflow
-    source:
-      repository: ((source_repository_git_workflow_image))
-      tag: v1
-    type: docker-image
-  - name: salt-pepper
-    source:
-      repository: ((source_repository_salt_pepper_image))
-      tag: v1
-    type: docker-image
-
-
+- name: email
+  source:
+    repository: pcfseceng/email-resource
+  type: docker-image
+- name: salt-pepper
+  source:
+    repository: ((docker_repository))/concourse-resource-salt-pepper
+  type: docker-image
 resources:
-  - check_every: 168h
-    name: r-((project_name))-dev
-    source:
-      branch: dev
-      private_key: ((r-git-ssh.private_key))
-      uri: ((source_uri))
-    type: git-workflow
-    webhook_token: ((webhook_token))
-  - name: r-salt
-    source:
-      eauth: ldap
-      password: ((r-salt.password))
-      uri: ((salt_api_uri))
-      username: ((r-salt.username))
-    type: salt-pepper
-  - name: r-docker-image-build
-    source:
-      repository: ((repository_build_image))
-      tag: v1
-    type: docker-image
-  - name: send-email
-    source:
-      from: ((smtp_from))
-      smtp:
-        host: ((smtp_host))
-        host_origin: ((smtp_host))
-        password: ((r-email.password))
-        port: "25"
-        username: ((r-email.username))
-      to:
-      - ((smtp_to))
-    type: email
+- check_every: 21900h
+  name: r-concourse-salt-pepper
+  source:
+    branch: ((git_branch))
+    private_key: ((r-git-ssh.private_key))
+    uri: ((git_uri))
+  type: git
+  webhook_token: ((webhook_token))
+- name: r-salt
+  source:
+    eauth: ldap
+    password: ((r-salt.password))
+    uri: ((uri_salt_api))
+    username: ((r-salt.username))
+  type: salt-pepper
+- name: r-docker-image-build
+  source:
+    repository: ((docker_repository))/concourse-resource-salt-pepper
+  type: docker-image
+- name: send-email
+  source:
+    from: ((smtp_from))
+    smtp:
+      host: ((smtp_host))
+      host_origin: ((smtp_host))
+      password: ((r-email.password))
+      port: "25"
+      username: ((r-email.username))
+    to:
+    - ((smtp_to))
+  type: email
