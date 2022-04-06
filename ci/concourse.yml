@@ -1,0 +1,155 @@
+resource_types:
+- name: email
+  type: docker-image
+  source:
+    repository: pcfseceng/email-resource
+
+- name: salt-pepper
+  type: registry-image
+  check_every: "24h"
+  tags:
+    - ssd
+  source: 
+    username: ((registry.username))
+    password: ((registry.password))
+    repository: ((registry.registry))/concourse-resource-salt-pepper
+    tag: latest
+
+resources:
+- name: r-((git_name))
+  tags:
+    - ssd
+  type: git
+  check_every: "24h"
+  webhook_token: ((webhook_token))
+  source:
+    uri: ((git_uri))
+    branch: ((git_branch))
+    private_key: ((r-git-ssh.private_key))
+
+- name: r-email
+  tags:
+    - ssd
+  type: email
+  check_every: "24h"
+  source:
+    smtp:
+      host: ((vars.smtp_host))
+      port: "((vars.smtp_port))" # this must be a string
+      username: ((r-email.username))
+      password: ((r-email.password))
+      host_origin: ((vars.smtp_helo))
+    from: ((vars.smtp_from))
+    to: 
+      - ((vars.smtp_to))
+
+
+- name: version
+  type: semver
+  source:
+    initial_version: "0.1.0"
+    driver: git
+    uri: ((git_uri))
+    branch: ((git_branch))
+    file: version
+    private_key: ((r-git-ssh.private_key))
+
+- name: r-salt
+  type: salt-pepper
+  source:
+    uri: ((vars.salt_api_uri))
+    username: ((r-salt.username))
+    password: ((r-salt.password))
+    eauth: ldap
+
+
+- name: r-docker-image-from
+  type: registry-image
+  source: 
+    repository: ((registry.registry))/debian
+    username: ((registry.username))
+    password: ((registry.password))
+    tag: bullseye-slim
+
+
+- name: r-docker-image-build
+  type: registry-image
+  check_every: "24h"
+  tags:
+    - ssd
+  source: 
+    username: ((registry.username))
+    password: ((registry.password))
+    repository: ((registry.registry))/((git_name))
+    tag: latest
+
+
+jobs:
+- name: j-build-image
+  serial: true
+  plan:
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - get: r-((git_name))
+            trigger: True
+            params:
+              depth: 1
+          - get: r-docker-image-from
+            trigger: True
+            params:
+              depth: 1
+            params:
+              format: oci
+          - get: version
+            trigger: True
+            params:
+              depth: 1
+
+    - load_var: version
+      file: version/version
+
+
+    - task: build-docker-image
+      privileged: true
+      file: "pipelines/task/build_docker_image.yaml"
+      input_mapping:
+        docker-from-image: r-docker-image-from
+        image-src: r-((git_name))
+      output_mapping:
+        image: image-build
+      params:
+        IMAGE_ARG_dockerfile_from_image: docker-from-image/image.tar
+        CONTEXT: "."
+        BUILD_ARG_http_proxy: ((vars.http_proxy))
+        BUILD_ARG_no_proxy: ((vars.no_proxy))
+        BUILD_ARG_author: ((author))
+        BUILD_ARG_version: ((.:version))
+
+
+    - put: r-docker-image-build
+      tags:
+        - ssd
+      inputs:
+        - image-build
+      params:
+        image: image-build/image.tar
+      on_failure:
+        put: r-email
+        tags:
+          - ssd
+        params:
+          subject_text: "Build failed: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}"
+          body_text: "Docker image build failed: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+
+
+- name: j-salt
+  plan:
+  - get: r-concourse-salt-pepper
+    passed:
+    - j-build-image
+    trigger: true
+  - params:
+      fun: test.ping
+      tgt: '*'
+    put: r-salt
