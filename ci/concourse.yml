@@ -145,7 +145,7 @@ jobs:
 
 - name: j-salt
   plan:
-  - get: r-concourse-salt-pepper
+  - get: r-docker-image-build
     passed:
     - j-build-image
     trigger: true
