@@ -84,6 +84,18 @@ resources:
     tag: latest
 
 
+- name: pipelines
+  type: git
+  source:
+    uri: ((vars.git_ssh_uri))/concourse/pipelines
+    branch: ((git_branch))
+    private_key: ((r-git-ssh.private_key))
+    git_config:
+      - name: core.bigFileThreshold
+        value: 5M
+    disable_ci_skip: true
+
+
 jobs:
 - name: j-build-image
   serial: true
@@ -103,6 +115,10 @@ jobs:
               format: oci
           - get: version
             trigger: True
+            params:
+              depth: 1
+          - get: pipelines
+            trigger: False
             params:
               depth: 1
 
