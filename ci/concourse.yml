@@ -66,10 +66,10 @@ resources:
 - name: r-docker-image-from
   type: registry-image
   source: 
-    repository: ((registry.registry))/debian
+    repository: ((registry.registry))/python
     username: ((registry.username))
     password: ((registry.password))
-    tag: bullseye-slim
+    tag: "pip-3.9.9-slim-bullseye"
 
 
 - name: r-docker-image-build
