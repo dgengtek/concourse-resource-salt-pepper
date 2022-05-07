@@ -108,7 +108,7 @@ jobs:
             params:
               depth: 1
           - get: r-docker-image-from
-            trigger: True
+            trigger: False
             params:
               depth: 1
             params:
