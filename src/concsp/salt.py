@@ -41,7 +41,6 @@ class SaltAPI():
         nodes = async_ret['return'][0]['minions']
         logger.info("nodes: {}".format(nodes))
         ret_nodes = []
-        exit_code = 1
 
         # keep trying until all expected nodes return
         total_time = 0
@@ -71,6 +70,9 @@ class SaltAPI():
                     },
                 }])
             except PepperException as exc:
+                if "Authentication" in str(exc):
+                    logger.info("Logging in again because of pepper authentication error")
+                    self.login()
                 logger.error(
                     "Retrying job lookup because of Pepper Error: {}."
                     .format(exc))
