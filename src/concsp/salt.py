@@ -45,12 +45,18 @@ class SaltAPI():
 
         # keep trying until all expected nodes return
         total_time = 0
+        error_count = 0
         start_time = time.time()
         exit_code = 0
         while True:
             logger.info("waiting for all expected nodes to return")
             total_time = time.time() - start_time
             if total_time > self.payload.timeout:
+                logger.error("Total timeout of {} exceeded. Stop waiting for job return.".format(self.payload.total_time))
+                exit_code = 1
+                break
+            elif error_count >= self.payload.retry:
+                logger.error("Error count exceed {} retries. Stop waiting for job return.".format(self.payload.retry))
                 exit_code = 1
                 break
 
@@ -59,7 +65,7 @@ class SaltAPI():
                 jid_ret = self.pepper.low([{
                     'client': 'runner',
                     'fun': 'jobs.lookup_jid',
-                    'timeout': 120,
+                    'timeout': self.payload.job_timeout,
                     'kwarg': {
                         'jid': jid,
                     },
@@ -68,13 +74,16 @@ class SaltAPI():
                 logger.error(
                     "Retrying job lookup because of Pepper Error: {}."
                     .format(exc))
+                error_count += 1
                 continue
             except urllib.error.HTTPError as exc:
                 logger.error(
                     "Retrying job lookup because of HTTP Error: {}."
                     .format(exc))
+                error_count += 1
                 continue
 
+            error_count = 0
             responded = set(jid_ret['return'][0].keys()) ^ set(ret_nodes)
             logger.info("Nodes responded: {}".format(responded))
             for node in responded:
@@ -89,9 +98,7 @@ class SaltAPI():
                 logger.info("Not all nodes responded. Trying again...")
                 time.sleep(self.payload.sleep_time)
 
-        if self.payload.fail_if_minions_dont_respond:
-            exit_code = exit_code
-        else:
+        if not self.payload.fail_if_minions_dont_respond:
             exit_code = 0
 
         yield exit_code, {"Failed": list(set(ret_nodes) ^ set(nodes))}

@@ -92,6 +92,8 @@ class ResourcePayload(object):
         self.verify_ssl = source.get("verify_ssl", True)
         self.outputter = source.get("outputter", True)
         self.timeout = source.get("timeout", 300)
+        self.job_timeout = source.get("job_timeout", 120)
+        self.retry = source.get("retry", 5)
         self.cache_token = source.get("cache_token", False)
         self.loglevel = source.get("loglevel", "warning")
         self.client = source.get("client", "local_async")

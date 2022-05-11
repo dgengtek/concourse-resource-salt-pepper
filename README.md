@@ -33,7 +33,9 @@ permission to run jobs.lookup_jid for the user concourse will be using. Eg:
 * `debug_http`: *Optional.* default: False
 * `verify_ssl`: *Optional.* default: True
 * `outputter`: *Optional.* default: True, Currently only simple outputter added
-* `timeout`: *Optional.* default: 300 (in seconds)
+* `timeout`: *Optional.* default: 300 (in seconds), total timeout for waiting on return
+* `job_timeout`: *Optional.* default: 120 (in seconds), salt job timeout
+* `retry`: *Optional.* default: 5, how often to retry on failure before exiting
 * `expr_form`: *Optional.* default: glob, can be set in source as default for resource use in put
 * `fail_if_minions_dont_respond`: *Optional.* default: True. The resource will return an error result which will result in failure in the pipeline.
 * `sleep_time`: *Optional.* default: 3 (in seconds). Define how long to sleep between each poll of results against the salt-api of the executed job
