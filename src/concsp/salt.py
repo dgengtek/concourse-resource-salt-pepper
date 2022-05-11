@@ -77,12 +77,14 @@ class SaltAPI():
                     "Retrying job lookup because of Pepper Error: {}."
                     .format(exc))
                 error_count += 1
+                time.sleep(self.payload.sleep_time)
                 continue
             except urllib.error.HTTPError as exc:
                 logger.error(
                     "Retrying job lookup because of HTTP Error: {}."
                     .format(exc))
                 error_count += 1
+                time.sleep(self.payload.sleep_time)
                 continue
 
             error_count = 0
