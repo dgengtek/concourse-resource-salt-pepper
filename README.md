@@ -38,6 +38,7 @@ permission to run jobs.lookup_jid for the user concourse will be using. Eg:
 * `retry`: *Optional.* default: 5, how often to retry on failure before exiting
 * `expr_form`: *Optional.* default: glob, can be set in source as default for resource use in put
 * `fail_if_minions_dont_respond`: *Optional.* default: True. The resource will return an error result which will result in failure in the pipeline.
+* `poll_lookup_jid`: *Optional.* default: True. The resource will poll for the result of the job. If disabled will return immediately
 * `sleep_time`: *Optional.* default: 3 (in seconds). Define how long to sleep between each poll of results against the salt-api of the executed job
 
 
@@ -63,4 +64,10 @@ Runs commands via the salt pepper library
 * `fun`: *Required.* The salt function to run
 * `args`: *Optional.* Arguments to the salt function ["test=True"]. Must be a list
 * `kwargs`: *Optional.* Key value arguments to pass to the function.
-* `expr_form`: *Optional.* default: glob
+* `timeout`: *Optional.* default: source
+* `job_timeout`: *Optional.* default: source
+* `retry`: *Optional.* default: source
+* `expr_form`: *Optional.* default: source
+* `fail_if_minions_dont_respond`: *Optional.* default: source
+* `poll_lookup_jid`: *Optional.* default: source
+* `sleep_time`: *Optional.* default: source

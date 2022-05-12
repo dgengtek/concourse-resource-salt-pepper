@@ -100,6 +100,8 @@ class ResourcePayload(object):
         self.expr_form = source.get("expr_form", "glob")
         self.fail_if_minions_dont_respond = source.get(
                 "fail_if_minions_dont_respond", True)
+        self.poll_lookup_jid = source.get(
+                "poll_lookup_jid", True)
         self.sleep_time = source.get("sleep_time", 3)
 
     def parse_payload_params(self, params):
@@ -135,6 +137,16 @@ class ResourcePayloadOut(ResourcePayload):
         self.expr_form = params.get("expr_form", self.expr_form)
         self.args = params.get("args", [])
         self.kwargs = params.get("kwargs", {})
+
+        self.fail_if_minions_dont_respond = params.get(
+                "fail_if_minions_dont_respond",
+                self.fail_if_minions_dont_respond)
+        self.poll_lookup_jid = params.get(
+                "poll_lookup_jid", self.poll_lookup_jid)
+        self.sleep_time = params.get("sleep_time", self.sleep_time)
+        self.timeout = params.get("timeout", self.timeout)
+        self.job_timeout = params.get("job_timeout", self.job_timeout)
+        self.retry = params.get("retry", self.retry)
 
 
 class ResourcePayloadException(Exception):

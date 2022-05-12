@@ -42,6 +42,10 @@ class SaltAPI():
         logger.info("nodes: {}".format(nodes))
         ret_nodes = []
 
+        print("jid: {}".format(jid), file=sys.stderr)
+        if not self.payload.poll_lookup_jid:
+            yield 0, {"Failed": list(set(ret_nodes) ^ set(nodes))}
+
         # keep trying until all expected nodes return
         total_time = 0
         error_count = 0
