@@ -126,14 +126,18 @@ class ResourcePayload(object):
 
 class ResourcePayloadOut(ResourcePayload):
     def parse_payload_params(self, params):
+        self.client = params.get("client", self.client)
         try:
             # Mandatory
-            self.tgt = params["tgt"]
             self.fun = params["fun"]
+            # this depends on if the client requires it
+            if self.client.startswith("local"):
+                self.tgt = params["tgt"]
+            else:
+                self.tgt = params.get("tgt", "")
         except KeyError as value_error:
             raise ResourcePayloadParameterException(
                     "Params config '{}' required".format(value_error))
-        self.client = params.get("client", self.client)
         self.expr_form = params.get("expr_form", self.expr_form)
         self.args = params.get("args", [])
         self.kwargs = params.get("kwargs", {})

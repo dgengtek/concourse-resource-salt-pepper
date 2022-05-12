@@ -62,7 +62,7 @@ Runs commands via the salt pepper library
 [Targeting minions](https://docs.saltproject.io/en/latest/topics/targeting/index.html)
 
 * `client`: *Optional.* default: from source configuration
-* `tgt`: *Required.* Saltstack targetting format of minions
+* `tgt`: *Required if the client does as well. See pepper* Saltstack targetting format of minions
 * `fun`: *Required.* The salt function to run
 * `args`: *Optional.* Arguments to the salt function ["test=True"]. Must be a list
 * `kwargs`: *Optional.* Key value arguments to pass to the function.
