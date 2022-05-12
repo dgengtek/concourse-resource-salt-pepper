@@ -33,8 +33,7 @@ class SaltAPI():
         Run a command with the local_async client and periodically poll the job
         cache for returns for the job.
         '''
-        load['client'] = 'local_async'
-        logger.info("Running local_async low")
+        logger.info("Running pepper.low with payload")
         async_ret = self.pepper.low(load)
         jid = async_ret['return'][0]['jid']
         logger.info("jid: {}".format(jid))

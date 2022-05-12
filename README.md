@@ -30,6 +30,7 @@ permission to run jobs.lookup_jid for the user concourse will be using. Eg:
 * `username`: *Required.*
 * `password`: *Required.*
 * `eauth`: *Optional.* default: auto
+* `client`: *Optional.* default: local_async, (local_async, runner)
 * `debug_http`: *Optional.* default: False
 * `verify_ssl`: *Optional.* default: True
 * `outputter`: *Optional.* default: True, Currently only simple outputter added
@@ -60,14 +61,15 @@ Runs commands via the salt pepper library
 
 [Targeting minions](https://docs.saltproject.io/en/latest/topics/targeting/index.html)
 
+* `client`: *Optional.* default: from source configuration
 * `tgt`: *Required.* Saltstack targetting format of minions
 * `fun`: *Required.* The salt function to run
 * `args`: *Optional.* Arguments to the salt function ["test=True"]. Must be a list
 * `kwargs`: *Optional.* Key value arguments to pass to the function.
-* `timeout`: *Optional.* default: source
-* `job_timeout`: *Optional.* default: source
-* `retry`: *Optional.* default: source
-* `expr_form`: *Optional.* default: source
-* `fail_if_minions_dont_respond`: *Optional.* default: source
-* `poll_lookup_jid`: *Optional.* default: source
-* `sleep_time`: *Optional.* default: source
+* `timeout`: *Optional.* default: from source configuration
+* `job_timeout`: *Optional.* default: from source configuration
+* `retry`: *Optional.* default: from source configuration
+* `expr_form`: *Optional.* default: from source configuration
+* `fail_if_minions_dont_respond`: *Optional.* default: from source configuration
+* `poll_lookup_jid`: *Optional.* default: from source configuration
+* `sleep_time`: *Optional.* default: from source configuration
