@@ -1,6 +1,6 @@
 # Concourse resource salt pepper
 
-Run commands on a remote salt-api instance with the help of [https://github.com/saltstack/pepper](pepper)
+Run commands on a remote salt-api instance with the help of [pepper](https://github.com/saltstack/pepper)
 
 
 See [example](./ci/concourse.yml) usage of the resource in a concourse pipeline
@@ -30,7 +30,7 @@ permission to run jobs.lookup_jid for the user concourse will be using. Eg:
 * `username`: *Required.*
 * `password`: *Required.*
 * `eauth`: *Optional.* default: auto
-* `client`: *Optional.* default: local_async, (local_async, runner)
+* `client`: *Optional.* default: local_async, (only local_async, runner_async supported)
 * `debug_http`: *Optional.* default: False
 * `verify_ssl`: *Optional.* default: True
 * `outputter`: *Optional.* default: True, Currently only simple outputter added
@@ -45,6 +45,10 @@ permission to run jobs.lookup_jid for the user concourse will be using. Eg:
 
 ## Behaviour
 
+[Targeting minions](https://docs.saltproject.io/en/latest/topics/targeting/index.html)
+
+[Salt client](https://docs.saltproject.io/en/latest/ref/clients/)
+
 ### check
 
 noop
@@ -58,8 +62,6 @@ noop
 Runs commands via the salt pepper library
 
 #### Parameters
-
-[Targeting minions](https://docs.saltproject.io/en/latest/topics/targeting/index.html)
 
 * `client`: *Optional.* default: from source configuration
 * `tgt`: *Required if the client does as well. See pepper* Saltstack targetting format of minions
