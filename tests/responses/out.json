@@ -11,6 +11,6 @@
     "fun": "test.ping",
     "arg": [],
     "kwargs": {},
-    "expr_form": "glob"
+    "tgt_type": "glob"
   }
 }

@@ -122,7 +122,7 @@ class SaltAPI():
 
         logger.info("Running pepper - {} {} - '{}' {} {} {} ".format(
             self.payload.client,
-            self.payload.expr_form,
+            self.payload.tgt_type,
             self.payload.tgt,
             self.payload.fun,
             self.payload.args,
@@ -172,7 +172,7 @@ def get_api_payload(payload):
         payload.fun,
         payload.args,
         payload.kwargs,
-        payload.expr_form,
+        payload.tgt_type,
         payload.timeout)
 
 
@@ -182,7 +182,7 @@ def build_load(
         fun,
         args=None,
         kwargs=None,
-        expr_form="glob",
+        tgt_type="glob",
         timeout=None,
         ret=None):
     return {
@@ -191,7 +191,7 @@ def build_load(
         "fun": fun,
         "arg": args,
         "kwarg": kwargs,
-        "expr_form": expr_form,
+        "tgt_type": tgt_type,
         "timeout": timeout,
         "ret": ret
         }

@@ -7,7 +7,7 @@
         "timeout": 60,
         "client": "local_async",
         "tgt": "*",
-        "expr_form": "glob",
+        "tgt_type": "glob",
         "debug_http": false,
         "verify_ssl": true,
         "outputter": "default",

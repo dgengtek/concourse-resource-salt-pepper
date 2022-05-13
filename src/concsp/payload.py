@@ -97,7 +97,7 @@ class ResourcePayload(object):
         self.cache_token = source.get("cache_token", False)
         self.loglevel = source.get("loglevel", "warning")
         self.client = source.get("client", "local_async")
-        self.expr_form = source.get("expr_form", "glob")
+        self.tgt_type = source.get("tgt_type", "glob")
         self.fail_if_minions_dont_respond = source.get(
                 "fail_if_minions_dont_respond", True)
         self.poll_lookup_jid = source.get(
@@ -107,7 +107,7 @@ class ResourcePayload(object):
     def parse_payload_params(self, params):
         # Optional
         self.client = params.get("client", self.client)
-        self.expr_form = params.get("expr_form", self.expr_form)
+        self.tgt_type = params.get("tgt_type", self.tgt_type)
         self.tgt = params.get("tgt", None)
         self.fun = params.get("fun", None)
         self.args = params.get("args", [])
@@ -138,7 +138,7 @@ class ResourcePayloadOut(ResourcePayload):
         except KeyError as value_error:
             raise ResourcePayloadParameterException(
                     "Params config '{}' required".format(value_error))
-        self.expr_form = params.get("expr_form", self.expr_form)
+        self.tgt_type = params.get("tgt_type", self.tgt_type)
         self.args = params.get("args", [])
         self.kwargs = params.get("kwargs", {})
 
