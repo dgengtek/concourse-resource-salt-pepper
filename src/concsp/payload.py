@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class ResourcePayload(object):
-    ''' Payload class '''
+    """Payload class"""
 
     def __init__(self):
         self.payload = {}
@@ -17,8 +17,7 @@ class ResourcePayload(object):
 
     def init(self, payload):
         if self.initialized:
-            raise ResourcePayloadException(
-                    "Payload has been initialized already.")
+            raise ResourcePayloadException("Payload has been initialized already.")
         self.initialized = True
 
         self.payload = self.get_payload(payload)
@@ -41,8 +40,7 @@ class ResourcePayload(object):
         try:
             payload = json.load(payload)
         except ValueError as value_error:
-            raise ResourcePayloadException(
-                    "JSON Input error: {}".format(value_error))
+            raise ResourcePayloadException("JSON Input error: {}".format(value_error))
         return payload
 
     def __getattribute__(self, name):
@@ -50,7 +48,8 @@ class ResourcePayload(object):
             return super().__getattribute__(name)
         if not self.initialized:
             raise ResourcePayloadException(
-                    "Payload is not initialized. Attribute access denied.")
+                "Payload is not initialized. Attribute access denied."
+            )
         return super().__getattribute__(name)
 
     def reset(self):
@@ -65,11 +64,12 @@ class ResourcePayload(object):
 
         if not os.path.isdir(sys.argv[1]):
             raise ResourcePayloadException(
-                    "Invalid dir argument passed '{}'".format(sys.argv[1]))
+                "Invalid dir argument passed '{}'".format(sys.argv[1])
+            )
         return sys.argv[1]
 
     def parse_payload(self):
-        ''' Parse payload passed by concourse'''
+        """Parse payload passed by concourse"""
         self.version = self.payload.get("version")
         if self.version is None:
             self.version = {}
@@ -86,7 +86,8 @@ class ResourcePayload(object):
             self.eauth = source.get("eauth", "auto")
         except KeyError as value_error:
             raise ResourcePayloadSourceException(
-                    "Source config '{}' required".format(value_error))
+                "Source config '{}' required".format(value_error)
+            )
         # Optional
         self.debug_http = source.get("debug_http", False)
         self.verify_ssl = source.get("verify_ssl", True)
@@ -99,9 +100,9 @@ class ResourcePayload(object):
         self.client = source.get("client", "local_async")
         self.tgt_type = source.get("tgt_type", "glob")
         self.fail_if_minions_dont_respond = source.get(
-                "fail_if_minions_dont_respond", True)
-        self.poll_lookup_jid = source.get(
-                "poll_lookup_jid", True)
+            "fail_if_minions_dont_respond", True
+        )
+        self.poll_lookup_jid = source.get("poll_lookup_jid", True)
         self.sleep_time = source.get("sleep_time", 3)
 
     def parse_payload_params(self, params):
@@ -137,16 +138,16 @@ class ResourcePayloadOut(ResourcePayload):
                 self.tgt = params.get("tgt", "")
         except KeyError as value_error:
             raise ResourcePayloadParameterException(
-                    "Params config '{}' required".format(value_error))
+                "Params config '{}' required".format(value_error)
+            )
         self.tgt_type = params.get("tgt_type", self.tgt_type)
         self.args = params.get("args", [])
         self.kwargs = params.get("kwargs", {})
 
         self.fail_if_minions_dont_respond = params.get(
-                "fail_if_minions_dont_respond",
-                self.fail_if_minions_dont_respond)
-        self.poll_lookup_jid = params.get(
-                "poll_lookup_jid", self.poll_lookup_jid)
+            "fail_if_minions_dont_respond", self.fail_if_minions_dont_respond
+        )
+        self.poll_lookup_jid = params.get("poll_lookup_jid", self.poll_lookup_jid)
         self.sleep_time = params.get("sleep_time", self.sleep_time)
         self.timeout = params.get("timeout", self.timeout)
         self.job_timeout = params.get("job_timeout", self.job_timeout)

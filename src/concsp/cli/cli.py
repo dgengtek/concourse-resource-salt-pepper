@@ -1,4 +1,5 @@
 import click
+
 # http://click.pocoo.org/5/options/
 from concsp import api
 import logging
@@ -9,17 +10,14 @@ logger = logging.getLogger(__name__)
 
 
 @click.group("concsp")
-@click.option(
-    "-l",
-    "--loglevel",
-    type=click.Choice(["info", "debug", "warning"]))
+@click.option("-l", "--loglevel", type=click.Choice(["info", "debug", "warning"]))
 @click.pass_context
 def main(ctx, loglevel):
     levels = {
         "info": logging.INFO,
         "debug": logging.DEBUG,
         "warning": logging.WARNING,
-        }
+    }
     logging.basicConfig(level=levels.get(loglevel, logging.WARNING))
     d = dict()
     d["loglevel"] = loglevel
@@ -27,24 +25,13 @@ def main(ctx, loglevel):
 
 
 @main.command("run")
-@click.argument(
-    "tgt",
-    required=True)
-@click.argument(
-    "fun",
-    required=True)
-@click.argument(
-    "args",
-    nargs=-1,
-    required=False)
+@click.argument("tgt", required=True)
+@click.argument("fun", required=True)
+@click.argument("args", nargs=-1, required=False)
 @click.option("--username")
 @click.option("--password")
-@click.option(
-    "--eauth",
-    default="auto")
-@click.option(
-    "--uri",
-    default="https://salt:8000")
+@click.option("--eauth", default="auto")
+@click.option("--uri", default="https://salt:8000")
 @click.pass_context
 def main_run(ctx, username, password, tgt, fun, args, uri, eauth):
     ctx.obj["source"] = {}
@@ -85,7 +72,5 @@ def main_out(ctx, source):
     try:
         concourse.run()
     except PepperException as exc:
-        logger.error(
-            "Exception in out:"
-            "{}".format(exc))
+        logger.error("Exception in out:" "{}".format(exc))
         sys.exit(1)

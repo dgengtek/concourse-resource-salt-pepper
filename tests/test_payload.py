@@ -1,9 +1,11 @@
 import pytest
-from concsp.payload import ResourcePayload,\
-    ResourcePayloadOut,\
-    ResourcePayloadException,\
-    ResourcePayloadSourceException,\
-    ResourcePayloadParameterException
+from concsp.payload import (
+    ResourcePayload,
+    ResourcePayloadOut,
+    ResourcePayloadException,
+    ResourcePayloadSourceException,
+    ResourcePayloadParameterException,
+)
 
 
 def test_load_payload(payload_check):
@@ -71,12 +73,15 @@ def test_payload_out_mandatory(payload_out):
         payload.init(payload_out)
 
 
-@pytest.mark.parametrize("key,value", [
-    ("args", {}),
-    ("args", ""),
-    ("kwargs", []),
-    ("kwargs", ""),
-])
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("args", {}),
+        ("args", ""),
+        ("kwargs", []),
+        ("kwargs", ""),
+    ],
+)
 def test_payload_out_kwarg(payload_out, key, value):
     payload_out["params"][key] = value
     payload = ResourcePayloadOut()

@@ -20,14 +20,11 @@ class ConcourseApi(abc.ABC):
         Run resource specific api
         """
         pepper = Pepper(
-            self.payload.uri,
-            self.payload.debug_http,
-            self.payload.verify_ssl)
+            self.payload.uri, self.payload.debug_http, self.payload.verify_ssl
+        )
         salt_pepper_api = self.saltapi(pepper, self.payload)
         pepper_payload = salt.get_api_payload(self.payload)
-        logger.debug(
-            "Running salt pepper with payload:"
-            "{}".format(pepper_payload))
+        logger.debug("Running salt pepper with payload:" "{}".format(pepper_payload))
         salt_pepper_api.run(pepper_payload)
 
     def run(self):
@@ -41,7 +38,7 @@ class ConcourseApi(abc.ABC):
             "debug": logging.DEBUG,
             "warning": logging.WARNING,
             "info": logging.INFO,
-            }
+        }
         loglevel = self.context.get("loglevel")
         if not loglevel:
             loglevel = self.payload.loglevel
@@ -69,10 +66,7 @@ class ConcourseApiNoop(ConcourseApi):
 
 class ConcourseApiIn(ConcourseApiNoop):
     def _output(self):
-        print(json.dumps(
-            {'version': {}},
-            indent=4,
-            sort_keys=True))
+        print(json.dumps({"version": {}}, indent=4, sort_keys=True))
 
 
 class ConcourseApiCheck(ConcourseApiNoop):
@@ -83,14 +77,21 @@ class ConcourseApiCheck(ConcourseApiNoop):
 class ConcourseApiOut(ConcourseApi):
     def _output(self):
         from datetime import datetime
-        print(json.dumps({
-            'version': {'version': datetime.isoformat(datetime.now())},
-            'metadata': [
-                {"name": "username", "value": self.payload.username},
-                {"name": "tgt", "value": self.payload.tgt},
-                {"name": "fun", "value": self.payload.fun},
-                ]
-            }, indent=4, sort_keys=True))
+
+        print(
+            json.dumps(
+                {
+                    "version": {"version": datetime.isoformat(datetime.now())},
+                    "metadata": [
+                        {"name": "username", "value": self.payload.username},
+                        {"name": "tgt", "value": self.payload.tgt},
+                        {"name": "fun", "value": self.payload.fun},
+                    ],
+                },
+                indent=4,
+                sort_keys=True,
+            )
+        )
 
 
 class ConcourseApiRun(ConcourseApiOut):
@@ -116,28 +117,16 @@ class ConcourseApiRun(ConcourseApiOut):
 
 
 def build_check(context):
-    return ConcourseApiCheck(
-        context,
-        payload.ResourcePayload,
-        salt.SaltAPI)
+    return ConcourseApiCheck(context, payload.ResourcePayload, salt.SaltAPI)
 
 
 def build_out(context):
-    return ConcourseApiOut(
-        context,
-        payload.ResourcePayloadOut,
-        salt.SaltAPI)
+    return ConcourseApiOut(context, payload.ResourcePayloadOut, salt.SaltAPI)
 
 
 def build_in(context):
-    return ConcourseApiIn(
-        context,
-        payload.ResourcePayload,
-        salt.SaltAPI)
+    return ConcourseApiIn(context, payload.ResourcePayload, salt.SaltAPI)
 
 
 def build_run(context, disable_input=True):
-    return ConcourseApiRun(
-        context,
-        payload.ResourcePayloadOut,
-        salt.SaltAPI)
+    return ConcourseApiRun(context, payload.ResourcePayloadOut, salt.SaltAPI)
