@@ -95,3 +95,26 @@ dev:
 
 devrm:
 	python3 setup.py develop --uninstall
+
+w: ## watch test
+	watchexec -w "src/" -w "tests/" -- make test
+
+wt: ##  watch test last failure
+	watchexec -w "src/" -w "tests/" -- pytest --lf
+
+wtv: ## watch test last failure verbose
+	watchexec -w "src/" -w "tests/" -- pytest --lf -vv
+
+wl: ## watch lint
+	watchexec -w "src/" -w "tests/" -- make lint
+
+cov: ## coverage
+	coverage run setup.py test
+	coverage report -m --include=src/*
+
+ci:
+	pip3 install -r requirements/dev.txt
+	python3 setup.py develop
+	black --check
+	python3 setup.py test
+
