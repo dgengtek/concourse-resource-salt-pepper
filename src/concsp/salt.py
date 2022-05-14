@@ -37,10 +37,12 @@ class SaltAPI:
         cache for returns for the job.
         """
 
-        if not self.payload.client.startswith("local") \
-                or not self.payload.client.startswith("runner"):
+        if not self.payload.client.startswith(
+            "local"
+        ) and not self.payload.client.startswith("runner"):
             raise PepperException(
-                "The client '{}' is not supported".format(self.payload.client))
+                "The client '{}' is not supported".format(self.payload.client)
+            )
 
         logger.info("Running pepper.low with payload")
         async_ret = self.pepper.low(load)
