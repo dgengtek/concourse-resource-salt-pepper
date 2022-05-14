@@ -127,9 +127,6 @@ class SaltAPI:
             return_data = builder(jid_ret)
             returned_minions = return_data.get_minion_ids()
 
-            responded = set(minions) ^ set(returned_minions)
-            logger.info("Minions responded: {}".format(responded))
-
             if set(returned_minions) == set(minions):
                 logger.info("All minions responded. Finishing.")
                 return 0, return_data, minions
