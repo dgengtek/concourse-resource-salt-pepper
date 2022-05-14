@@ -54,7 +54,7 @@ class SaltAPI:
 
         print("jid: {}".format(jid), file=sys.stderr)
         if not self.payload.poll_lookup_jid:
-            yield 0, None, minions
+            return 0, None, minions
 
         # keep trying until all expected minions return
         total_time = 0
