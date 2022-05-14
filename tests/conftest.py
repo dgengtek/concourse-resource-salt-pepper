@@ -23,6 +23,36 @@ def payload_out():
         return json.load(f)
 
 
+@pytest.fixture
+def return_empty():
+    return {"return": [{}]}
+
+
+@pytest.fixture
+def return_pepper_low():
+    return {"return": [{"jid": "20220513153503156399", "minions": ["minion1"]}]}
+
+
+@pytest.fixture
+def return_etc():
+    """
+    any other return data not matched
+    """
+    return {"return": [{"minion1": True}]}
+
+
+@pytest.fixture
+def return_local_async():
+    with open("tests/return/local_async.json") as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def return_runner_async():
+    with open("tests/return/runner_async.json") as f:
+        return json.load(f)
+
+
 @pytest.fixture()
 def concourse_payload_check(payload_check):
     payload = ResourcePayload()

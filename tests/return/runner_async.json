@@ -1,0 +1,84 @@
+{
+  "return": [
+    {
+      "minion1_master": {
+        "fun": "runner.state.orch",
+        "jid": "20220513155548855211",
+        "user": "concourse",
+        "fun_args": [
+          "orch.salt.sync_master"
+        ],
+        "_stamp": "2022-05-13T15:55:51.477814",
+        "return": {
+          "data": {
+            "minion1_master": {
+              "salt_|-fileserver-update_|-fileserver.update_|-runner": {
+                "name": "fileserver.update",
+                "changes": {
+                  "return": true
+                },
+                "result": true,
+                "comment": "Runner function fileserver.update executed.",
+                "__orchestration__": true,
+                "__jid__": "20220513155825397248",
+                "__sls__": "orch.salt.sync_master",
+                "__run_num__": 0,
+                "start_time": "17:58:22.835623",
+                "duration": 110074.703,
+                "__id__": "fileserver-update"
+              },
+              "salt_|-master_sync_fileserver_|-saltutil.sync_fileserver_|-runner": {
+                "name": "saltutil.sync_fileserver",
+                "changes": {
+                  "return": []
+                },
+                "result": true,
+                "comment": "Runner function saltutil.sync_fileserver executed.",
+                "__orchestration__": true,
+                "__jid__": "20220513160015334727",
+                "__sls__": "orch.salt.sync_master",
+                "__run_num__": 1,
+                "start_time": "18:00:12.910881",
+                "duration": 5052.693,
+                "__id__": "master_sync_fileserver"
+              },
+              "salt_|-master_sync_states_|-saltutil.sync_states_|-runner": {
+                "name": "saltutil.sync_states",
+                "changes": {
+                  "return": []
+                },
+                "result": true,
+                "comment": "Runner function saltutil.sync_states executed.",
+                "__orchestration__": true,
+                "__jid__": "20220513160020268209",
+                "__sls__": "orch.salt.sync_master",
+                "__run_num__": 2,
+                "start_time": "18:00:17.964117",
+                "duration": 23599.73,
+                "__id__": "master_sync_states"
+              },
+              "salt_|-master_sync_modules_|-saltutil.sync_modules_|-runner": {
+                "name": "saltutil.sync_modules",
+                "changes": {
+                  "return": []
+                },
+                "result": true,
+                "comment": "Runner function saltutil.sync_modules executed.",
+                "__orchestration__": true,
+                "__jid__": "20220513160044204210",
+                "__sls__": "orch.salt.sync_master",
+                "__run_num__": 3,
+                "start_time": "18:00:41.564464",
+                "duration": 27961.092,
+                "__id__": "master_sync_modules"
+              }
+            }
+          },
+          "outputter": "highstate",
+          "retcode": 0
+        },
+        "success": true
+      }
+    }
+  ]
+}
