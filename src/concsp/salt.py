@@ -157,8 +157,6 @@ class SaltAPI:
         )
 
         exit_code, return_data, minions = self.poll_for_returns(load)
-        print(minions)
-
         if not self.payload.fail_if_minions_dont_respond:
             exit_code = 0
 
@@ -166,7 +164,7 @@ class SaltAPI:
         if not return_data:
             sys.exit(exit_code)
 
-        print(str(return_data))
+        print(str(return_data), file=sys.stderr)
         if return_data.success and exit_code == 0:
             sys.exit(0)
         elif not return_data.success:
