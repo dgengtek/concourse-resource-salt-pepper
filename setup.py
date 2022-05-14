@@ -4,6 +4,9 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
+with open('version') as version_file:
+    version = version_file.read()
+
 with open('HISTORY.adoc') as history_file:
     history = history_file.read()
 
@@ -19,7 +22,7 @@ with open('requirements_dev.txt') as req:
 
 setup(
     name='concsp',
-    version='0.0.1',
+    version=version,
     description="Concourse resource for salt pepper",
     long_description=readme + '\n\n' + history,
     author="dgengtek",
@@ -38,14 +41,10 @@ setup(
     zip_safe=False,
     keywords='concourse-salt-pepper',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.10',
     ],
     test_suite='tests',
     tests_require=requirements_dev,
