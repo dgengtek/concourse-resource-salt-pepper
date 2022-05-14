@@ -1,0 +1,172 @@
+{
+  "return": [
+    {
+      "outputter": "highstate",
+      "data": {
+        "minion1": {
+          "file_|-Install bootstrap_|-/var/tmp/salt_bootstrap.sh_|-managed": {
+            "changes": {},
+            "comment": "File /var/tmp/salt_bootstrap.sh is in the correct state",
+            "name": "/var/tmp/salt_bootstrap.sh",
+            "result": true,
+            "__sls__": "salt.bootstrap",
+            "__run_num__": 0,
+            "start_time": "18:12:15.450265",
+            "duration": 104.322,
+            "__id__": "Install bootstrap"
+          },
+          "pkg_|-install prerequisite packages_|-install prerequisite packages_|-installed": {
+            "name": "install prerequisite packages",
+            "changes": {},
+            "result": true,
+            "comment": "No packages to install provided",
+            "__sls__": "salt.master.install",
+            "__run_num__": 1,
+            "start_time": "18:12:19.797210",
+            "duration": 4.102,
+            "__id__": "install prerequisite packages"
+          },
+          "git_|-Configure repository https://git.p.domain/salt/extension_modules.git_|-https://git.p.domain/salt/extension_modules.git_|-latest": {
+            "name": "https://git.p.domain/salt/extension_modules.git",
+            "result": true,
+            "comment": "Repository /srv/salt/extension_modules is up-to-date",
+            "changes": {},
+            "__sls__": "salt.master.repositories",
+            "__run_num__": 2,
+            "start_time": "18:12:19.842113",
+            "duration": 1293.219,
+            "__id__": "Configure repository https://git.p.domain/salt/extension_modules.git"
+          },
+          "git_|-Configure repository https://git.p.domain/salt/pillar.git_|-https://git.p.domain/salt/pillar.git_|-latest": {
+            "name": "https://git.p.domain/salt/pillar.git",
+            "result": true,
+            "comment": "https://git.p.domain/salt/pillar.git was fetched, resulting in updated refs. Repository was fast-forwarded to origin/master (67cfbe1).",
+            "changes": {
+              "revision": {
+                "old": "1c0d40537146da97d3f7421f28517c79513393a9",
+                "new": "67cfbe171cb121b9472187ecc23a9fcf5e24216b"
+              }
+            },
+            "__sls__": "salt.master.repositories",
+            "__run_num__": 3,
+            "start_time": "18:12:21.136434",
+            "duration": 2012.545,
+            "__id__": "Configure repository https://git.p.domain/salt/pillar.git"
+          },
+          "git_|-Configure repository https://git.p.domain/salt/pillar-stack.git_|-https://git.p.domain/salt/pillar-stack.git_|-latest": {
+            "name": "https://git.p.domain/salt/pillar-stack.git",
+            "result": true,
+            "comment": "Repository /srv/salt/pillar-stack is up-to-date",
+            "changes": {},
+            "__sls__": "salt.master.repositories",
+            "__run_num__": 4,
+            "start_time": "18:12:23.149974",
+            "duration": 1299.98,
+            "__id__": "Configure repository https://git.p.domain/salt/pillar-stack.git"
+          },
+          "file_|-copy master configuration file to /etc/salt/_|-/etc/salt//master_|-serialize": {
+            "changes": {
+              "diff": "--- \n+++ \n@@ -30,7 +30,6 @@\n     concourse:\n     - '*':\n       - test.ping\n-      - cmd.*\n       - state.*\n       - archive.*\n       - at.*\n@@ -221,7 +220,7 @@\n - salt/job/*/ret/*:\n   - salt://reactor/email_on_failure.sls\n rest_cherrypy:\n-  debug: true\n+  debug: false\n   port: 8000\n   ssl_chain: /usr/local/share/ca-certificates/domain-ca-chain.crt\n   ssl_crt: /etc/pki/salt.p.domain.crt\n@@ -233,7 +232,7 @@\n   auth:\n     method: approle\n     role_id: ccb3142f-1ce3-c49b-cf5f-a62f1408e5f1\n-    secret_id: daac7828-a648-aed3-e603-0d5b446c204b\n+    secret_id: c89365a6-0d68-7b75-5f58-dea0b4c176a7\n     token: ''\n   policies:\n   - saltstack\n"
+            },
+            "comment": "File /etc/salt//master updated",
+            "name": "/etc/salt//master",
+            "result": true,
+            "__sls__": "salt.master.config",
+            "__run_num__": 5,
+            "start_time": "18:12:24.451101",
+            "duration": 102.552,
+            "__id__": "copy master configuration file to /etc/salt/"
+          },
+          "file_|-copy roster to /etc/salt/_|-/etc/salt//roster_|-serialize": {
+            "changes": {},
+            "comment": "File /etc/salt//roster is in the correct state",
+            "name": "/etc/salt//roster",
+            "result": true,
+            "__sls__": "salt.master.config",
+            "__run_num__": 6,
+            "start_time": "18:12:24.554185",
+            "duration": 6.434,
+            "__id__": "copy roster to /etc/salt/"
+          },
+          "file_|-create master.d_|-/etc/salt/master.d/_|-directory": {
+            "name": "/etc/salt/master.d/",
+            "changes": {},
+            "result": true,
+            "comment": "The directory /etc/salt/master.d is in the correct state",
+            "__sls__": "salt.master.config",
+            "__run_num__": 7,
+            "start_time": "18:12:24.561164",
+            "duration": 3.738,
+            "__id__": "create master.d"
+          },
+          "file_|-create git key directory_|-/etc/salt/gitfs_|-directory": {
+            "name": "/etc/salt/gitfs",
+            "changes": {},
+            "result": true,
+            "comment": "The directory /etc/salt/gitfs is in the correct state",
+            "__sls__": "salt.master.config",
+            "__run_num__": 8,
+            "start_time": "18:12:24.565514",
+            "duration": 3.507,
+            "__id__": "create git key directory"
+          },
+          "file_|-copy external pillar ldap configuration to salt master_|-/etc/salt/master.d//ldap.yaml_|-managed": {
+            "changes": {},
+            "comment": "File /etc/salt/master.d//ldap.yaml is in the correct state",
+            "name": "/etc/salt/master.d//ldap.yaml",
+            "result": true,
+            "__sls__": "salt.master.config",
+            "__run_num__": 9,
+            "start_time": "18:12:24.570519",
+            "duration": 196.479,
+            "__id__": "copy external pillar ldap configuration to salt master"
+          },
+          "file_|-Deploy salt-master service unit_|-/etc/systemd/system/salt-master.service_|-managed": {
+            "changes": {},
+            "comment": "File /etc/systemd/system/salt-master.service is in the correct state",
+            "name": "/etc/systemd/system/salt-master.service",
+            "result": true,
+            "__sls__": "salt.master.service",
+            "__run_num__": 10,
+            "start_time": "18:12:24.767530",
+            "duration": 6.901,
+            "__id__": "Deploy salt-master service unit"
+          },
+          "file_|-Deploy salt-api service unit_|-/etc/systemd/system/salt-api.service_|-managed": {
+            "changes": {},
+            "comment": "File /etc/systemd/system/salt-api.service is in the correct state",
+            "name": "/etc/systemd/system/salt-api.service",
+            "result": true,
+            "__sls__": "salt.master.service",
+            "__run_num__": 11,
+            "start_time": "18:12:24.774972",
+            "duration": 6.726,
+            "__id__": "Deploy salt-api service unit"
+          },
+          "service_|-salt-master_|-salt-master_|-running": {
+            "name": "salt-master",
+            "changes": {},
+            "result": true,
+            "comment": "The service salt-master is already running",
+            "__sls__": "salt.master.service",
+            "__run_num__": 12,
+            "start_time": "18:12:24.792614",
+            "duration": 183.296,
+            "__id__": "salt-master"
+          },
+          "service_|-start salt-api service_|-salt-api_|-running": {
+            "name": "salt-api",
+            "changes": {},
+            "result": false,
+            "comment": "The service salt-api is already running",
+            "__sls__": "salt.master.service",
+            "__run_num__": 13,
+            "start_time": "18:12:24.978562",
+            "duration": 143.835,
+            "__id__": "start salt-api service"
+          }
+        }
+      }
+    }
+  ]
+}

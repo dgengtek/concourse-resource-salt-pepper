@@ -6,22 +6,30 @@ logger = logging.getLogger(__name__)
 class ReturnData:
     def __init__(self, minions, success=False):
         if not minions:
-            minions = {}
+            minions = []
         self.minions = minions
+        # did every minion return without errors?
         self.success = success
 
     @classmethod
     def build_from_local(cls, input_data):
         return_data = input_data["return"][0]["data"]
-        success = input_data.get("success", False)
-        minions = get_data(return_data)
+        success = True
 
+        minions = []
+        for minion_id, states in return_data.items():
+            minion = MinionReturnData.build_from_dict(minion_id, states)
+            if not minion.success:
+                success = False
+            minions.append(minion)
         return cls(minions, success)
 
     @classmethod
     def build_from_runner(cls, input_data):
         return_data = input_data["return"][0]
         master, values = return_data.popitem()
+        success = values.get("success", False)
+
         if not master.endswith("_master"):
             raise ReturnDataException(
                 "Return data from runner does not"
@@ -29,34 +37,45 @@ class ReturnData:
             )
         return_data = values["return"]["data"]
 
-        success = values.get("success", False)
-        minions = get_data(return_data)
+        minions = []
+        for minion_id, states in return_data.items():
+            minions.append(MinionReturnData.build_from_dict(minion_id, states))
 
         return cls(minions, success)
 
     def __str__(self):
-        output = list()
-        for minion_id, states in self.minions.items():
-            output.append("==> {}".format(minion_id))
-            for state in states:
-                output.append("{}".format(state))
+        output = []
+        for minion in self.minions:
+            output.append(str(minion))
         return "\n".join(output)
 
-    @classmethod
-    def args_to_string(cls, args):
-        funargs = []
-        for arg in args:
-            if isinstance(arg, dict):
-                for i, v in arg.items():
-                    if isinstance(v, dict):
-                        v = str(v)
-                    funargs.append("{}={}".format(i, v))
-            else:
-                funargs.append(arg)
-        return " ".join(funargs)
 
-    def get_command(self, limit_args=15):
-        return "{} {}".format(self.module, self.args_to_string(self.args)[:limit_args])
+class MinionReturnData:
+    def __init__(self, minion_id, states, success=False):
+        self.minion_id = minion_id
+        self.states = states
+        self.success = success
+
+    @classmethod
+    def build_from_dict(cls, minion_id, input_states):
+        states = []
+        success = True
+        for state_id, values in input_states.items():
+            state = State.build_from_dict(state_id, values)
+            if not state.result:
+                success = False
+            states.append(state)
+        return cls(minion_id, states, success)
+
+    def __str__(self):
+        output = []
+        if self.success:
+            output.append("+==> {}".format(self.minion_id))
+        else:
+            output.append("-==> {}".format(self.minion_id))
+        for state in self.states:
+            output.append("{}".format(state))
+        return "\n".join(output)
 
 
 class State:
@@ -141,7 +160,7 @@ class State:
         return state
 
     def __str__(self):
-        output = list()
+        output = []
         if self.result:
             output.append("+{}:".format(self.state_id))
         else:
@@ -167,13 +186,3 @@ class State:
 
 class ReturnDataException(Exception):
     pass
-
-
-def get_data(return_data):
-    data = {}
-    for minion_id, values in return_data.items():
-        states = []
-        for state_id, state_values in values.items():
-            states.append(State.build_from_dict(state_id, state_values))
-            data.update({minion_id: states})
-    return data

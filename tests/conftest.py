@@ -48,8 +48,20 @@ def return_local_async():
 
 
 @pytest.fixture
+def return_local_async_failed():
+    with open("tests/return/local_async_failed.json") as f:
+        return json.load(f)
+
+
+@pytest.fixture
 def return_runner_async():
     with open("tests/return/runner_async.json") as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def return_runner_async_failed():
+    with open("tests/return/runner_async_failed.json") as f:
         return json.load(f)
 
 
