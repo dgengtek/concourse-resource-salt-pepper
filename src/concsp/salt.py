@@ -4,6 +4,7 @@ import logging
 import sys
 import textwrap
 import urllib
+from .data import ReturnData
 
 logger = logging.getLogger(__name__)
 
@@ -35,25 +36,31 @@ class SaltAPI:
         Run a command with the local_async client and periodically poll the job
         cache for returns for the job.
         """
+
+        if not self.payload.client.startswith("local") \
+                or not self.payload.client.startswith("runner"):
+            raise PepperException(
+                "The client '{}' is not supported".format(self.payload.client))
+
         logger.info("Running pepper.low with payload")
         async_ret = self.pepper.low(load)
         jid = async_ret["return"][0]["jid"]
         logger.info("jid: {}".format(jid))
-        nodes = async_ret["return"][0]["minions"]
-        logger.info("nodes: {}".format(nodes))
-        ret_nodes = []
+        minions = async_ret["return"][0]["minions"]
+        logger.info("job running on minions: {}".format(minions))
+        returned_minions = []
 
         print("jid: {}".format(jid), file=sys.stderr)
         if not self.payload.poll_lookup_jid:
-            yield 0, {"Failed": list(set(ret_nodes) ^ set(nodes))}
+            yield 0, None, minions
 
-        # keep trying until all expected nodes return
+        # keep trying until all expected minions return
         total_time = 0
         error_count = 0
         start_time = time.time()
         exit_code = 0
         while True:
-            logger.info("waiting for all expected nodes to return")
+            logger.info("waiting for all expected minions to return")
             total_time = time.time() - start_time
             if total_time > self.payload.timeout:
                 logger.error(
@@ -108,24 +115,24 @@ class SaltAPI:
                 continue
 
             error_count = 0
-            responded = set(jid_ret["return"][0].keys()) ^ set(ret_nodes)
-            logger.info("Nodes responded: {}".format(responded))
-            for node in responded:
-                yield None, {node: jid_ret["return"][0][node]}
-            ret_nodes = list(jid_ret["return"][0].keys())
 
-            if set(ret_nodes) == set(nodes):
-                logger.info("All nodes responded. Finishing.")
-                exit_code = 0
-                break
-            else:
-                logger.info("Not all nodes responded. Trying again...")
+            if not jid_ret["return"][0]:
+                logger.info("Return was empty. Waiting for result")
                 time.sleep(self.payload.sleep_time)
+                continue
 
-        if not self.payload.fail_if_minions_dont_respond:
-            exit_code = 0
+            builder = ReturnData.get_builder_for_client(self.payload.client)
+            return_data = builder(jid_ret)
+            returned_minions = return_data.get_minion_ids()
 
-        yield exit_code, {"Failed": list(set(ret_nodes) ^ set(nodes))}
+            responded = set(minions) ^ set(returned_minions)
+            logger.info("Minions responded: {}".format(responded))
+
+            if set(returned_minions) == set(minions):
+                logger.info("All minions responded. Finishing.")
+                return 0, return_data, minions
+
+        return exit_code, None, minions
 
     def run(self, load):
         try:
@@ -150,35 +157,23 @@ class SaltAPI:
             )
         )
 
-        for exit_code, result in self.poll_for_returns(load):
-            print_result(exit_code, result)
+        exit_code, return_data, minions = self.poll_for_returns(load)
+        print(minions)
 
+        if not self.payload.fail_if_minions_dont_respond:
+            exit_code = 0
 
-def print_result(rc, result):
-    from collections import OrderedDict
+        # nothing was returned
+        if not return_data:
+            sys.exit(exit_code)
 
-    minion, values = result.popitem()
-    if not rc:
-        rc = 0
+        print(str(return_data))
+        if return_data.success and exit_code == 0:
+            sys.exit(0)
+        elif not return_data.success:
+            sys.exit(1)
 
-    output = "{} ==> {}\n".format(minion, rc)
-    if type(values) == dict:
-        stack = [(k, v, 1) for k, v in OrderedDict(values).items()]
-    else:
-        output += "{}".format(_indent_char(values))
-        print(output, file=sys.stderr)
-        return
-    while stack:
-        key, items, nested = stack.pop(0)
-        if type(items) == dict:
-            output += "{}:\n".format(_indent_char(key, nested))
-            for k, v in OrderedDict(items).items():
-                stack.insert(0, (k, v, nested + 1))
-        else:
-            output += "{}:\n".format(_indent_char(key, nested))
-            output += "{}\n".format(_indent_char(items, nested + 1))
-
-    print(output, file=sys.stderr)
+        sys.exit(exit_code)
 
 
 def _indent_char(s, count=1, spaces=4, character=" "):
