@@ -162,15 +162,15 @@ class SaltAPI:
 
         # nothing was returned
         if not return_data:
-            sys.exit(exit_code)
+            return exit_code
 
         print(str(return_data), file=sys.stderr)
         if return_data.success and exit_code == 0:
-            sys.exit(0)
+            return 0
         elif not return_data.success:
-            sys.exit(1)
+            return 1
 
-        sys.exit(exit_code)
+        return exit_code
 
 
 def _indent_char(s, count=1, spaces=4, character=" "):

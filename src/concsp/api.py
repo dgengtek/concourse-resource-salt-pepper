@@ -4,6 +4,7 @@ import abc
 import sys
 import json
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ class ConcourseApi(abc.ABC):
         self.resource_payload = resource_payload
         self.saltapi = saltapi
         self.payload = {}
+        self.exit_code = 0
 
     def _execute(self):
         """
@@ -25,13 +27,14 @@ class ConcourseApi(abc.ABC):
         salt_pepper_api = self.saltapi(pepper, self.payload)
         pepper_payload = salt.get_api_payload(self.payload)
         logger.debug("Running salt pepper with payload:" "{}".format(pepper_payload))
-        salt_pepper_api.run(pepper_payload)
+        self.exit_code = salt_pepper_api.run(pepper_payload)
 
     def run(self):
         self._input()
         self._setup()
         self._execute()
         self._output()
+        sys.exit(self.exit_code)
 
     def _setup(self):
         levels = {
