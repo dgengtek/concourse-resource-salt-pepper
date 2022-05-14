@@ -65,6 +65,12 @@ def return_runner_async_failed():
         return json.load(f)
 
 
+@pytest.fixture
+def return_ping():
+    with open("tests/return/ping.json") as f:
+        return json.load(f)
+
+
 @pytest.fixture()
 def concourse_payload_check(payload_check):
     payload = ResourcePayload()

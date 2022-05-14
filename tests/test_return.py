@@ -9,6 +9,14 @@ def test_return_local_async(return_local_async):
     assert "+service_|-start salt-api service_|-salt-api_|-running:" in output
 
 
+def test_return_ping(return_ping):
+    return_data = data.ReturnData.build_from_local(return_ping)
+    assert return_data.success
+    output = str(return_data)
+    assert "minion1" in output
+    assert "minion2" in output
+
+
 def test_return_local_async_failed(return_local_async_failed):
     return_data = data.ReturnData.build_from_local(return_local_async_failed)
     assert not return_data.success

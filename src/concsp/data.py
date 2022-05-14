@@ -13,7 +13,10 @@ class ReturnData:
 
     @classmethod
     def build_from_local(cls, input_data):
-        return_data = input_data["return"][0]["data"]
+        return_data = input_data["return"][0]
+        if "data" in return_data:
+            return_data = return_data["data"]
+
         success = True
 
         minions = []
@@ -51,7 +54,8 @@ class ReturnData:
             return cls.build_from_runner
         else:
             raise ReturnDataException(
-                "ReturnData for client {} is not implemented".format(client))
+                "ReturnData for client {} is not implemented".format(client)
+            )
 
     def get_minion_ids(self):
         ids = []
@@ -76,11 +80,14 @@ class MinionReturnData:
     def build_from_dict(cls, minion_id, input_states):
         states = []
         success = True
-        for state_id, values in input_states.items():
-            state = State.build_from_dict(state_id, values)
-            if not state.result:
-                success = False
-            states.append(state)
+        if isinstance(input_states, dict):
+            for state_id, values in input_states.items():
+                state = State.build_from_dict(state_id, values)
+                if not state.result:
+                    success = False
+                states.append(state)
+        else:
+            states.append(input_states)
         return cls(minion_id, states, success)
 
     def __str__(self):
@@ -198,6 +205,7 @@ class State:
         output.append("  changes: {}".format(self.changes))
         output.append("  pchanges: {}".format(self.pchanges))
         return "\n".join(output)
+
 
 class ReturnDataException(Exception):
     pass
