@@ -32,6 +32,7 @@ permission to run jobs.lookup_jid for the user concourse will be using. Eg:
 * `eauth`: *Optional.* default: auto
 * `client`: *Optional.* default: local_async, (only local_async, runner_async supported)
 * `debug_http`: *Optional.* default: False
+* `loglevel`: *Optional.* default: warning
 * `verify_ssl`: *Optional.* default: True
 * `outputter`: *Optional.* default: True, Currently only simple outputter added
 * `timeout`: *Optional.* default: 300 (in seconds), total timeout for waiting on return
