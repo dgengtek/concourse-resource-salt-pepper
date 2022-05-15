@@ -4,7 +4,6 @@ import abc
 import sys
 import json
 import logging
-import sys
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +41,7 @@ class ConcourseApi(abc.ABC):
             "warning": logging.WARNING,
             "info": logging.INFO,
         }
-        loglevel = self.context.get("loglevel")
-        if not loglevel:
-            loglevel = self.payload.loglevel
-        logging.basicConfig(loglevel=levels.get(loglevel))
+        logging.basicConfig(loglevel=levels.get(self.payload.loglevel))
 
     def _input(self):
         self.payload = self.resource_payload()
