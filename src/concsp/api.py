@@ -41,7 +41,7 @@ class ConcourseApi(abc.ABC):
             "warning": logging.WARNING,
             "info": logging.INFO,
         }
-        logging.basicConfig(loglevel=levels.get(self.payload.loglevel))
+        logging.getLogger().setLevel(levels.get(self.payload.loglevel))
 
     def _input(self):
         self.payload = self.resource_payload()
