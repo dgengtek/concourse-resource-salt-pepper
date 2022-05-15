@@ -36,6 +36,7 @@ class SaltAPI:
         Run a command with the local_async client and periodically poll the job
         cache for returns for the job.
         """
+        minions = []
 
         if not self.payload.client.startswith(
             "local"
@@ -46,11 +47,17 @@ class SaltAPI:
 
         logger.info("Running pepper.low with payload")
         async_ret = self.pepper.low(load)
+        if not async_ret["return"][0]:
+            logger.debug(async_ret)
+            print(
+                "No jid was assigned. See salt-api logs for details.", file=sys.stderr
+            )
+            return 1, None, minions
+
         jid = async_ret["return"][0]["jid"]
         logger.info("jid: {}".format(jid))
         minions = async_ret["return"][0]["minions"]
         logger.info("job running on minions: {}".format(minions))
-        returned_minions = []
 
         print("jid: {}".format(jid), file=sys.stderr)
         if not self.payload.poll_lookup_jid:
