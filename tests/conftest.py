@@ -7,8 +7,19 @@ import json
 
 
 @pytest.fixture()
-def something():
-    pass
+def api_patched(mocker, api):
+    mocker.patch.object(api.pepper, "low", autospec=True)
+    return api
+
+
+@pytest.fixture()
+def api_payload(concourse_payload_out):
+    return salt.get_api_payload(concourse_payload_out)
+
+
+@pytest.fixture()
+def api_payload_runner_async(concourse_payload_out_runner_async):
+    return salt.get_api_payload(concourse_payload_out_runner_async)
 
 
 @pytest.fixture
@@ -24,6 +35,12 @@ def payload_out():
 
 
 @pytest.fixture
+def payload_out_runner_async():
+    with open("tests/responses/out_runner_async.json") as f:
+        return json.load(f)
+
+
+@pytest.fixture
 def return_empty():
     return {"return": [{}]}
 
@@ -31,6 +48,15 @@ def return_empty():
 @pytest.fixture
 def return_pepper_low():
     return {"return": [{"jid": "20220513153503156399", "minions": ["minion1"]}]}
+
+
+@pytest.fixture
+def return_pepper_low_runner():
+    return {
+        "return": [
+            {"tag": "salt/run/20220521185305751430", "jid": "20220521185305751430"}
+        ]
+    }
 
 
 @pytest.fixture
@@ -82,6 +108,13 @@ def concourse_payload_check(payload_check):
 def concourse_payload_out(payload_out):
     payload = ResourcePayload()
     payload.init(payload_out)
+    return payload
+
+
+@pytest.fixture()
+def concourse_payload_out_runner_async(payload_out_runner_async):
+    payload = ResourcePayload()
+    payload.init(payload_out_runner_async)
     return payload
 
 

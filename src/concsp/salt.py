@@ -55,11 +55,14 @@ class SaltAPI:
             return 1, None, minions
 
         jid = async_ret["return"][0]["jid"]
-        logger.info("jid: {}".format(jid))
-        minions = async_ret["return"][0]["minions"]
-        logger.info("job running on minions: {}".format(minions))
-
         print("jid: {}".format(jid), file=sys.stderr)
+
+        if "tag" in async_ret["return"][0]:
+            logger.info("tag: {}".format(async_ret["return"][0]["tag"]))
+        else:
+            minions = async_ret["return"][0].get("minions", [])
+            logger.info("job running on minions: {}".format(minions))
+
         if not self.payload.poll_lookup_jid:
             return 0, None, minions
 
@@ -69,7 +72,6 @@ class SaltAPI:
         start_time = time.time()
         exit_code = 0
         while True:
-            logger.info("waiting for all expected minions to return")
             total_time = time.time() - start_time
             if total_time > self.payload.timeout:
                 logger.error(
@@ -130,13 +132,9 @@ class SaltAPI:
                 time.sleep(self.payload.sleep_time)
                 continue
 
-            builder = ReturnData.get_builder_for_client(self.payload.client)
+            builder = ReturnData.get_builder_for_client(load.get("client"))
             return_data = builder(jid_ret)
-            returned_minions = return_data.get_minion_ids()
-
-            if set(returned_minions) == set(minions):
-                logger.info("All minions responded. Finishing.")
-                return 0, return_data, minions
+            return 0, return_data, minions
 
         return exit_code, None, minions
 

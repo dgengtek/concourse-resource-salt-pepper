@@ -6,11 +6,9 @@
       "password": "pass1word"
   },
   "params": {
-    "client": "local_async",
-    "tgt": "*",
-    "fun": "test.ping",
-    "args": [],
-    "kwargs": {},
-    "tgt_type": "glob"
+    "client": "runner_async",
+    "fun": "state.orch",
+    "args": ["orch.test_orch"],
+    "kwargs": {}
   }
 }

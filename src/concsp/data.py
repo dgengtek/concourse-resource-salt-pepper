@@ -74,6 +74,12 @@ class ReturnData:
             output.append(str(minion))
         return "\n".join(output)
 
+    def __eq__(self, other):
+        return (
+            sorted(self.minions) == sorted(other.minions)
+            and self.success == other.success
+        )
+
 
 class MinionReturnData:
     def __init__(self, minion_id, states, success=False):
@@ -94,6 +100,13 @@ class MinionReturnData:
         else:
             states.append(input_states)
         return cls(minion_id, states, success)
+
+    def __eq__(self, other):
+        return (
+            self.minion_id == other.minion_id
+            and sorted(self.states) == sorted(other.states)
+            and self.success == other.success
+        )
 
     def __str__(self):
         output = []
@@ -135,6 +148,14 @@ class State:
 
     def __lt__(self, other):
         return self.nr < other.nr
+
+    def __eq__(self, other):
+        return (
+            self.state_id == other.state_id
+            and self.name == other.name
+            and self.sls == other.sls
+            and self.result == other.result
+        )
 
     @classmethod
     def build_from_dict(cls, state_id, input_data):
