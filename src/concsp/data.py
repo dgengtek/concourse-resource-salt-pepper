@@ -1,4 +1,5 @@
 import logging
+import copy
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,9 @@ class ReturnData:
         self.success = success
 
     @classmethod
-    def build_from_local(cls, input_data):
+    def build_from_local(cls, data):
+        input_data = copy.deepcopy(data)
+
         return_data = input_data["return"][0]
         if "data" in return_data:
             return_data = return_data["data"]
@@ -28,7 +31,9 @@ class ReturnData:
         return cls(minions, success)
 
     @classmethod
-    def build_from_runner(cls, input_data):
+    def build_from_runner(cls, data):
+        input_data = copy.deepcopy(data)
+
         return_data = input_data["return"][0]
         master, values = return_data.popitem()
         success = values.get("success", False)
