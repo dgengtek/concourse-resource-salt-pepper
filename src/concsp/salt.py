@@ -76,7 +76,7 @@ class SaltAPI:
             if total_time > self.payload.timeout:
                 logger.error(
                     "Total timeout of {} exceeded. Stop waiting for job return.".format(
-                        self.payload.total_time
+                        self.payload.timeout
                     )
                 )
                 exit_code = 1
