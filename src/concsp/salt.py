@@ -2,7 +2,6 @@ from pepper import PepperException
 import time
 import logging
 import sys
-import textwrap
 import urllib
 from .data import ReturnData
 
@@ -176,13 +175,6 @@ class SaltAPI:
             return 1
 
         return exit_code
-
-
-def _indent_char(s, count=1, spaces=4, character=" "):
-    result = s if type(s) == str else str(s)
-    for i in range(count):
-        result = textwrap.indent(result, character * spaces)
-    return result
 
 
 def get_api_payload(payload):

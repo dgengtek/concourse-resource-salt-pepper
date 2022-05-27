@@ -1,5 +1,7 @@
 import logging
 import copy
+import yaml
+from .utils import _indent_char
 
 logger = logging.getLogger(__name__)
 
@@ -170,9 +172,9 @@ class State:
         start_time = input_data.get("start_time")
         changes = False
         pchanges = False
-        if input_data.get("changes", ""):
+        if input_data.get("changes"):
             changes = input_data["changes"]
-        if input_data.get("pchanges", ""):
+        if input_data.get("pchanges"):
             pchanges = input_data["pchanges"]
 
         state = cls(
@@ -197,8 +199,6 @@ class State:
         run_nr = "single return"
         result = input_data
         ident = "state return id undefined"
-        changes = False
-        pchanges = False
         changes = False
         pchanges = False
         state_id = "{}: {}".format(fun, type(result))
@@ -228,7 +228,14 @@ class State:
         output.append("  result: {}".format(self.result))
         output.append("  state_ran: {}".format(self.state_ran))
         output.append("  comment: {}".format(self.comment))
-        output.append("  changes: {}".format(self.changes))
+
+        if isinstance(self.changes, dict):
+            changes = _indent_char(yaml.dump(self.changes, default_flow_style=False))
+            output.append("  changes:")
+            output.append(changes)
+        else:
+            output.append("  changes: {}".format(self.changes))
+
         output.append("  pchanges: {}".format(self.pchanges))
         return "\n".join(output)
 
