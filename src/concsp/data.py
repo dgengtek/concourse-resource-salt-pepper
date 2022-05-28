@@ -22,14 +22,7 @@ class ReturnData:
         if "data" in return_data:
             return_data = return_data["data"]
 
-        success = True
-
-        minions = []
-        for minion_id, states in return_data.items():
-            minion = MinionReturnData.build_from_dict(minion_id, states)
-            if not minion.success:
-                success = False
-            minions.append(minion)
+        success, minions = get_minions_result(return_data)
         return cls(minions, success)
 
     @classmethod
@@ -38,7 +31,6 @@ class ReturnData:
 
         return_data = input_data["return"][0]
         master, values = return_data.popitem()
-        success = values.get("success", False)
 
         if not master.endswith("_master"):
             raise ReturnDataException(
@@ -47,10 +39,7 @@ class ReturnData:
             )
         return_data = values["return"]["data"]
 
-        minions = []
-        for minion_id, states in return_data.items():
-            minions.append(MinionReturnData.build_from_dict(minion_id, states))
-
+        success, minions = get_minions_result(return_data)
         return cls(minions, success)
 
     @classmethod
@@ -119,6 +108,17 @@ class MinionReturnData:
         for state in self.states:
             output.append("{}".format(state))
         return "\n".join(output)
+
+
+def get_minions_result(return_data):
+    minions = []
+    success = True
+    for minion_id, states in return_data.items():
+        minion = MinionReturnData.build_from_dict(minion_id, states)
+        if not minion.success:
+            success = False
+        minions.append(minion)
+    return success, minions
 
 
 class State:
