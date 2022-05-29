@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
+set -o pipefail
 readonly TMPDIR=/tmp
 readonly PAYLOAD=$(mktemp -u $TMPDIR/resource-salt-pepper_request.XXXXXXXX)
 readonly RESOURCE_RESPONSE=$(mktemp -u $TMPDIR/resource-salt-pepper_response.XXXXXXXX)
