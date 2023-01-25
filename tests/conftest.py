@@ -4,6 +4,7 @@ from concsp import salt
 from concsp.payload import ResourcePayload
 import error_mock
 import json
+import copy
 
 
 @pytest.fixture()
@@ -83,6 +84,32 @@ def return_local_async_failed():
 def return_runner_async():
     with open("tests/return/runner_async.json") as f:
         return json.load(f)
+
+
+@pytest.fixture
+def return_runner_async_other():
+    with open("tests/return/runner_async_other_return.json") as f:
+        return json.load(f)
+
+@pytest.fixture
+def return_runner_async_other_failed(return_runner_async_other):
+    data = copy.deepcopy(return_runner_async_other)
+    data["return"][0]["minion1_master"]["return"]["retcode"] = 1
+    data["return"][0]["minion1_master"]["success"] = False
+    return data
+
+
+@pytest.fixture
+def return_runner_async_string():
+    with open("tests/return/runner_async_string_return.json") as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def return_runner_async_string_failed(return_runner_async_string):
+    data = copy.deepcopy(return_runner_async_string)
+    data["return"][0]["minion1_master"]["success"] = False
+    return data
 
 
 @pytest.fixture

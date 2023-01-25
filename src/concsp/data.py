@@ -37,9 +37,23 @@ class ReturnData:
                 "Return data from runner does not"
                 "contain the expected master as the only entry"
             )
-        return_data = values["return"]["data"]
+        success = values["success"]
+        values = values["return"]
+        # returners can return anything...
+        if "data" in values:
+            return_data = values["data"]
+            success, minions = get_minions_result(return_data)
+        elif "retcode" in values:
+            success = not bool(values["retcode"])
+            minions = []
+        elif "result" in values:
+            success = values["result"]
+            minions = []
+        # could just be a string return
+        else:
+            minions = []
+            logger.warning("Unexpected return data: {}".format(values))
 
-        success, minions = get_minions_result(return_data)
         return cls(minions, success)
 
     @classmethod

@@ -1,0 +1,21 @@
+{
+  "return": [
+    {
+      "minion1_master": {
+        "fun": "runner.mymod.wait_ready",
+        "jid": "20230125183751367414",
+        "user": "concourse",
+        "fun_args": [
+          {
+            "tgt": "",
+            "tgt_type": "glob",
+            "timeout": 600
+          }
+        ],
+        "_stamp": "2023-01-25T18:37:54.472338",
+        "return": "some string returned",
+        "success": true
+      }
+    }
+  ]
+}
